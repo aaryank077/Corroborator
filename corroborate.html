@@ -1,0 +1,848 @@
+<meta charset="utf-8">
+<title>Corroborate</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: breaking-news desk (claim queue | claim workbench | live story in serif) under an event strip; case study is one 68ch column */
+:root{
+  --bg:#f0f1f4; --panel:#ffffff; --sunk:#e8eaef; --line:#d6d9e1; --line-2:#bcc1cd;
+  --fg:#1a1d26; --muted:#585e6e; --faint:#8a8f9e;
+  --accent:#3f3aa6; --accent-soft:#e2e1f6; --on-accent:#ffffff;
+  --unv:#7a7f8e; --single:#a8650a; --single-soft:#f6e6c9; --corr:#0d7480; --corr-soft:#d4eef0;
+  --conf:#2c7a3f; --conf-soft:#d9eedd; --false:#b9332c; --false-soft:#f7dcd9; --sup:#7446b8; --sup-soft:#ebe2f7;
+  --font-ui:"Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-copy:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --hdr:48px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111319; --panel:#181b23; --sunk:#1e222c; --line:#2a2f3b; --line-2:#3d4352;
+  --fg:#e3e5ec; --muted:#9aa0b0; --faint:#6c7282;
+  --accent:#9d98ff; --accent-soft:#25234a; --on-accent:#121230;
+  --unv:#8d93a3; --single:#e5a548; --single-soft:#3a2c15; --corr:#4cc3cc; --corr-soft:#163236;
+  --conf:#5cc274; --conf-soft:#18321f; --false:#f0736b; --false-soft:#3d1d1c; --sup:#b593f2; --sup-soft:#2b2245;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#111319; --panel:#181b23; --sunk:#1e222c; --line:#2a2f3b; --line-2:#3d4352;
+  --fg:#e3e5ec; --muted:#9aa0b0; --faint:#6c7282;
+  --accent:#9d98ff; --accent-soft:#25234a; --on-accent:#121230;
+  --unv:#8d93a3; --single:#e5a548; --single-soft:#3a2c15; --corr:#4cc3cc; --corr-soft:#163236;
+  --conf:#5cc274; --conf-soft:#18321f; --false:#f0736b; --false-soft:#3d1d1c; --sup:#b593f2; --sup-soft:#2b2245;
+  color-scheme:dark; }
+
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--font-ui);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
+/* top bar */
+.top{flex:none;display:flex;align-items:center;gap:20px;height:var(--hdr);background:var(--panel);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:8px;font:700 17px/1 var(--font-copy)}
+.tabs{display:flex;gap:2px;height:100%}
+.tabs a{display:flex;align-items:center;padding:0 12px;color:var(--muted);text-decoration:none;font-weight:600;border-bottom:2px solid transparent}
+.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs a:hover{color:var(--fg)}
+.site{margin-left:auto;color:var(--muted);font-size:12.5px;white-space:nowrap}
+.site b{color:var(--fg);font-weight:600}
+.view{flex:1;min-height:0}
+
+/* event strip */
+#view-prototype{display:flex;flex-direction:column}
+.event{flex:none;display:flex;flex-wrap:wrap;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.ev-title{padding:10px 24px 10px 0;margin-right:20px;border-right:1px solid var(--line);min-width:0}
+.ev-title .lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--false);display:flex;align-items:center;gap:6px}
+.ev-title .lab i{width:7px;height:7px;border-radius:50%;background:var(--false);display:inline-block}
+.ev-title h1{margin:2px 0 0;font:600 16px/1.25 var(--font-copy)}
+.ev-title .sub{font-size:12px;color:var(--muted)}
+.kpi{padding:10px 20px 10px 0;margin-right:20px;border-right:1px solid var(--line)}
+.kpi:last-child{border-right:0;margin-right:0}
+.kpi .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi .val{font:500 20px/1.2 var(--font-mono)}
+.kpi .val.false{color:var(--false)} .kpi .val.ready{color:var(--accent)}
+.kpi .sub{font-size:12px;color:var(--muted)}
+.spark{display:flex;gap:12px;align-items:center}
+.spark svg{display:block}
+
+/* console */
+.console{flex:1;min-height:0;display:grid;grid-template-columns:330px minmax(0,1fr) 380px}
+.pane{min-height:0;overflow:auto;background:var(--panel)}
+.pane.queue{border-right:1px solid var(--line)}
+.pane.work{background:var(--bg)}
+.pane.story{border-left:1px solid var(--line)}
+.ph{position:sticky;top:0;z-index:2;background:inherit;display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+.ph h2{margin:0;font:700 12px/1.2 var(--font-ui);text-transform:uppercase;letter-spacing:.08em}
+.ph .meta{font-size:12px;color:var(--muted)}
+
+/* status glyph */
+.g{display:inline-block;width:11px;height:11px;border-radius:50%;flex:none;vertical-align:-1px;box-sizing:border-box}
+.g.unverified{border:1.5px dotted var(--unv)}
+.g.single{border:1.5px solid var(--single);background:linear-gradient(90deg,var(--single) 50%,transparent 50%)}
+.g.corroborated{border:1.5px solid var(--corr);box-shadow:inset 0 0 0 1.5px var(--panel);background:var(--corr)}
+.g.confirmed{background:var(--conf);border:1.5px solid var(--conf)}
+.g.debunked{border-radius:2px;background:repeating-linear-gradient(45deg,var(--false) 0 2px,transparent 2px 4px);border:1.5px solid var(--false)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:11px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.unverified{background:var(--sunk);color:var(--muted)}
+.pill.single{background:var(--single-soft);color:var(--single)}
+.pill.corroborated{background:var(--corr-soft);color:var(--corr)}
+.pill.confirmed{background:var(--conf-soft);color:var(--conf)}
+.pill.debunked{background:var(--false-soft);color:var(--false)}
+.g.superseded{border:1.5px solid var(--sup);background:linear-gradient(135deg,transparent 40%,var(--sup) 40% 60%,transparent 60%)}
+.pill.superseded{background:var(--sup-soft);color:var(--sup)}
+
+/* queue */
+.grp{padding:12px 14px 4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.qlist{list-style:none;margin:0;padding:0}
+.qi{display:grid;grid-template-columns:14px 1fr auto;gap:2px 8px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 14px;cursor:pointer;align-items:baseline}
+.qi:hover{background:var(--sunk)}
+.qi[aria-selected="true"]{background:var(--accent-soft)}
+.qi .tx{font-weight:600;line-height:1.3}
+.qi .id{font:500 11px var(--font-mono);color:var(--faint)}
+.qi .ln{grid-column:2/4;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}
+.qi .flag{font-weight:700}
+.qi .flag.false{color:var(--false)} .qi .flag.ready{color:var(--accent)} .qi .flag.conflict{color:var(--single)}
+
+/* workbench */
+.wb{padding:18px 20px 40px;display:flex;flex-direction:column;gap:16px;max-width:820px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:14px 16px}
+.claimh .id{font:500 12px var(--font-mono);color:var(--faint)}
+.claimh h3{margin:2px 0 8px;font:600 22px/1.25 var(--font-copy);text-wrap:balance}
+.claimh .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-size:13px;color:var(--muted)}
+.claimh .row b{color:var(--fg);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:4px;border:1px solid var(--line-2);background:var(--panel);cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{background:var(--sunk)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--false);border-color:var(--false);color:#fff}
+.btn:disabled{background:var(--sunk);border-color:var(--line);color:var(--faint);cursor:not-allowed;filter:none}
+.btn.sm{height:26px;padding:0 9px;font-size:12px}
+.need{border-left:3px solid var(--unv);background:var(--panel)}
+.need.single{border-left-color:var(--single)} .need.corroborated{border-left-color:var(--corr)} .need.confirmed{border-left-color:var(--conf)} .need.debunked{border-left-color:var(--false);background:var(--false-soft)} .need.superseded{border-left-color:var(--sup)}
+.numcheck{border-left:3px solid var(--single);font-size:14px}
+.numcheck .nums{display:flex;flex-wrap:wrap;gap:8px 24px;margin:6px 0 2px}
+.numcheck .nums div{font-size:12px;color:var(--muted)}
+.numcheck .nums b{display:block;font:600 22px/1.1 var(--font-mono);color:var(--fg)}
+.src .q{grid-column:2/4;margin:4px 0 0;padding:2px 0 2px 10px;border-left:2px solid var(--line-2);font:italic 400 14.5px/1.45 var(--font-copy);color:var(--fg)}
+.summary{padding:12px 18px 14px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.summary h4{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.summary h4 span:last-child{font-weight:500;letter-spacing:0;text-transform:none}
+.summary ul{margin:0;padding-left:18px;font:400 14.5px/1.45 var(--font-copy)}
+.summary li{margin:4px 0}
+.summary .st{font:600 11px/1 var(--font-ui);color:var(--muted)}
+.summary .st.warn{color:var(--single)}
+.ln-item.mismatch{box-shadow:inset 3px 0 0 var(--single)}
+.numline{grid-column:2;font-size:12.5px;color:var(--single);font-weight:600;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.supline{grid-column:2;font-size:12.5px;color:var(--sup);font-weight:600}
+.need h4,.card h4{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.need p{margin:0 0 4px;font-size:15px}
+.need .why{font-size:13px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.actions .note{font-size:12.5px;color:var(--muted)}
+.conflict{border-left:3px solid var(--single);font-size:13.5px}
+.conflict button{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.indep{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.indep .big{font:600 28px/1 var(--font-mono)}
+.indep .of{font-size:13px;color:var(--muted)}
+.tree{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.root{border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.src{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 10px;padding:8px 10px;align-items:baseline}
+.src+.src{border-top:1px dashed var(--line)}
+.src.derived{padding-left:30px;background:var(--sunk);position:relative}
+.src.derived::before{content:"↳";position:absolute;left:12px;top:8px;color:var(--faint);font-family:var(--font-mono)}
+.tag{font:600 10.5px/1 var(--font-mono);text-transform:uppercase;letter-spacing:.04em;padding:4px 5px;border-radius:3px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.src.derived .tag{background:var(--panel)}
+.src .who{font-weight:600;min-width:0}
+.src .t{font:500 12px var(--font-mono);color:var(--muted)}
+.src .nt{grid-column:2/4;font-size:12.5px;color:var(--muted)}
+.rec{font-size:11.5px;font-weight:600;color:var(--conf)}
+.rec.bg{color:var(--muted)}
+.mentions{margin-top:10px;font-size:12.5px;color:var(--muted)}
+.empty{padding:12px;border:1px dashed var(--line-2);border-radius:4px;color:var(--muted);font-size:13px}
+form.log{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+form.log label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+form.log input[type=text],form.log select,form.log textarea{height:32px;border:1px solid var(--line-2);border-radius:4px;background:var(--panel);padding:0 8px;font-weight:400;color:var(--fg);min-width:0}
+form.log textarea{height:auto;padding:6px 8px;resize:vertical;font:italic 400 14px/1.4 var(--font-copy)}
+form.log label span{font-weight:400}
+form.log .chk{flex-direction:row;align-items:center;gap:6px;font-weight:500;color:var(--fg)}
+form.log .full{grid-column:1/-1}
+form.log .actions{grid-column:1/-1;margin:0}
+.timeline{list-style:none;margin:0;padding:0;font-size:13px}
+.timeline li{display:grid;grid-template-columns:48px 1fr;gap:10px;padding:3px 0}
+.timeline .t{font:500 12px var(--font-mono);color:var(--muted)}
+
+/* story */
+.story-h{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.story-h .kick{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--false)}
+.story-h h3{margin:4px 0 4px;font:700 20px/1.2 var(--font-copy);text-wrap:balance}
+.story-h .by{font-size:12px;color:var(--muted)}
+.lines{list-style:none;margin:0;padding:0}
+.ln-item{padding:12px 18px;border-bottom:1px solid var(--line);cursor:pointer;display:grid;grid-template-columns:42px minmax(0,1fr);gap:4px 10px}
+.ln-item:hover{background:var(--sunk)}
+.ln-item.sel{background:var(--accent-soft)}
+.ln-item .t{font:500 12px/1.7 var(--font-mono);color:var(--muted)}
+.ln-item .cp{font:400 15px/1.5 var(--font-copy)}
+.ln-item .mt{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.ln-item.bad{background:var(--false-soft)}
+.ln-item.bad .cp{text-decoration:underline wavy var(--false);text-underline-offset:4px;text-decoration-thickness:1px}
+.ln-item.struck .cp{text-decoration:line-through;color:var(--faint)}
+.ln-item.correction{cursor:default;background:var(--sunk)}
+.ln-item.correction .cp{font-style:italic;font-size:14px}
+.badline{grid-column:2;font-size:12.5px;color:var(--false);font-weight:600;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;
+  padding:10px 12px 10px 14px;border-radius:5px;background:var(--fg);color:var(--bg);font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:20;max-width:calc(100% - 32px)}
+.toast button{background:none;border:1px solid currentColor;border-radius:3px;color:inherit;padding:3px 10px;cursor:pointer;font-weight:700}
+
+/* case study */
+#view-case-study{overflow:auto}
+.cs{padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:68ch;margin:0 auto}
+.cs .eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 10px}
+.cs h1{font:700 clamp(34px,5vw,50px)/1.05 var(--font-copy);letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
+.cs .lede{font:400 19px/1.5 var(--font-copy);color:var(--muted);margin:0 0 28px}
+.metarow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:48px}
+.metarow div{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.metarow b{display:block;font:600 15px/1.35 var(--font-ui);color:var(--fg);text-transform:none;letter-spacing:0;margin-top:3px}
+.cs section{margin-bottom:56px}
+.cs h2{font:700 28px/1.15 var(--font-copy);margin:0 0 14px;text-wrap:balance}
+.cs h3{font:700 17px/1.3 var(--font-ui);margin:24px 0 6px}
+.cs p,.cs li{font-size:16px;line-height:1.65}
+.cs p{margin:0 0 14px}
+.cs ul{padding-left:20px;margin:0 0 14px}
+.cs a{color:var(--accent)}
+.todo{display:inline-block;font:600 10.5px/1 var(--font-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--single);border:1px dashed var(--single);border-radius:3px;padding:4px 6px;vertical-align:2px;margin-right:6px}
+.todo-block{border:1px dashed var(--single);border-radius:4px;padding:14px 16px;background:var(--panel);margin:0 0 14px}
+.todo-block p:last-child{margin:0}
+.users{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.user{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px 16px}
+.user h4{margin:0 0 2px;font:700 16px var(--font-ui)}
+.user .role{font-size:12.5px;color:var(--accent);font-weight:600;margin-bottom:6px}
+.user p{font-size:14.5px;margin:0;color:var(--muted)}
+.decision{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;padding:20px 0;border-top:1px solid var(--line)}
+.decision:last-child{border-bottom:1px solid var(--line)}
+.decision .dn{font:700 19px/1.25 var(--font-copy);text-wrap:balance}
+.decision dl{margin:0;display:grid;grid-template-columns:100px minmax(0,1fr);gap:8px 14px}
+.decision dt{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:4px}
+.decision dd{margin:0;font-size:15.5px;line-height:1.6}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+.status{font:500 11px var(--font-mono);color:var(--single)}
+.status.ok{color:var(--conf)}
+.findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 16px}
+.finding{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:14.5px;line-height:1.5}
+.finding b{display:block;font:700 15px/1.3 var(--font-ui);margin-bottom:2px}
+@media (max-width:640px){.findings{grid-template-columns:1fr}}
+.figure{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px;margin:0}
+.figure figcaption{font-size:13.5px;color:var(--muted);margin-top:12px}
+.ladder{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;font-size:14.5px}
+.tasks{counter-reset:t;list-style:none;padding:0}
+.tasks li{counter-increment:t;display:grid;grid-template-columns:34px 1fr;margin-bottom:8px}
+.tasks li::before{content:"T" counter(t);font:600 13px/1.65 var(--font-mono);color:var(--accent)}
+.cta{display:inline-flex;align-items:center;padding:10px 16px;border-radius:4px;background:var(--accent);color:var(--on-accent)!important;text-decoration:none;font-weight:700;font-size:14.5px}
+.foot{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:1240px){ .console{grid-template-columns:290px minmax(0,1fr) 330px} }
+@media (max-width:980px){
+  html,body{height:auto;min-height:100%}
+  .view{flex:none}
+  .console{display:flex;flex-direction:column}
+  .pane{overflow:visible}
+  .pane.queue,.pane.story{border:0;border-bottom:1px solid var(--line)}
+  .pane.queue{max-height:420px;overflow:auto}
+  .site{display:none}
+}
+@media (max-width:640px){
+  .top{gap:10px} .tabs a{padding:0 8px}
+  .ev-title{border-right:0;margin-right:0;width:100%;padding-right:0;border-bottom:1px solid var(--line)}
+  .kpi{padding-right:12px;margin-right:12px} .kpi .val{font-size:17px}
+  .spark{display:none}
+  .wb{padding:14px 0 30px}
+  form.log{grid-template-columns:1fr}
+  .metarow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .users{grid-template-columns:1fr}
+  .decision{grid-template-columns:1fr;gap:8px}
+  .decision dl{grid-template-columns:1fr;gap:2px}
+  .decision dd{margin-bottom:8px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<header class="top">
+  <div class="brand"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="10" r="5.5" fill="none" stroke="var(--accent)" stroke-width="1.8"/><circle cx="13" cy="10" r="5.5" fill="var(--accent)" opacity=".85"/></svg>Corroborate</div>
+  <nav class="tabs" aria-label="Views">
+    <a href="#prototype" data-view="prototype">Prototype</a>
+    <a href="#case-study" data-view="case-study">Case study</a>
+  </nav>
+  <div class="site">The Marlow Ledger <span>(fictional)</span> · Metro desk · <b class="mono">16:42</b></div>
+</header>
+
+<!-- ============ PROTOTYPE ============ -->
+<main class="view" id="view-prototype">
+  <div class="event" id="event"></div>
+  <div class="console">
+    <section class="pane queue" aria-label="Claims">
+      <div class="ph"><h2>Claims</h2><span class="meta" id="qmeta"></span></div>
+      <div id="queue"></div>
+    </section>
+    <section class="pane work" aria-label="Selected claim"><div class="wb" id="work"></div></section>
+    <aside class="pane story" aria-label="Live story">
+      <div class="ph"><h2>Live story</h2><span class="meta">as published</span></div>
+      <div class="story-h"><div class="kick">Live updates</div><h3>Fire at East Marlow resin plant; residents told to shelter in place</h3><div class="by">Metro staff · updated <span class="mono" id="updated">16:30</span></div></div>
+      <div class="summary" id="summary"></div>
+      <ul class="lines" id="lines"></ul>
+    </aside>
+  </div>
+  <div class="toast" id="toast" hidden role="status"></div>
+</main>
+
+<!-- ============ CASE STUDY ============ -->
+<main class="view" id="view-case-study" hidden>
+  <div class="cs">
+    <div class="col">
+      <p class="eyebrow">Concept project · Product design</p>
+      <h1>Knowing what you know during breaking news</h1>
+      <p class="lede">Corroborate is a workspace for a newsroom's breaking-news desk. It turns a flood of posts, alerts and calls into a short list of claims, shows how many truly independent sources stand behind each one, and keeps the published story tied to that evidence.</p>
+      <div class="metarow">
+        <div>Role<b>Sole designer</b></div>
+        <div>Timeline<b><span class="todo">Fill in</span></b></div>
+        <div>Tools<b>Figma, HTML/JS prototype</b></div>
+        <div>My background<b><span class="todo">Fill in</span></b></div>
+      </div>
+
+      <section>
+        <h2>The problem</h2>
+        <p>When something big breaks, a newsroom is flooded with claims within minutes: social posts, wire alerts, scanner traffic, reporters' calls, tips and press releases. The editor running the story has to decide, again and again, what can be published now, how to attribute it, and what has to wait.</p>
+        <p>That work usually happens across a chat channel, a shared document and people's memory. The same failures come up over and over:</p>
+        <ul>
+          <li><strong>Duplicate checking.</strong> Two reporters call the same official because neither knew the other was on it.</li>
+          <li><strong>False corroboration.</strong> A detail looks confirmed because three outlets have it, but all three are repeating one original report.</li>
+          <li><strong>Orphaned errors.</strong> A detail is disproved, but it stays in the live story because nobody connected the two.</li>
+        </ul>
+        <p>The design question: <strong>how might an editor see, for every claim, how much independent evidence stands behind it, what's still missing, and where it already appears in print?</strong></p>
+      </section>
+
+      <section>
+        <h2>Who it's for</h2>
+        <div class="users">
+          <div class="user"><h4>Breaking-news editor</h4><div class="role">Primary user</div><p>Runs the live story. Decides what goes in, how it's attributed, and when to correct.</p></div>
+          <div class="user"><h4>Reporter in the field</h4><div class="role">Brings in sources</div><p>Makes calls and gets to the scene. Needs to know what to chase and what's already handled.</p></div>
+          <div class="user"><h4>Verification specialist</h4><div class="role">Checks media and accounts</div><p>Traces images and video back to where they first appeared. Needs a fast way to flag a fake.</p></div>
+          <div class="user"><h4>Standards editor</h4><div class="role">Reviews afterward</div><p>Cares about attribution and corrections. Needs a record of why each line was published.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Research</h2>
+        <p>I don't work inside a newsroom, so I studied breaking news the way I'd report on an institution I couldn't get into: from the public record.</p>
+        <h3>1. Reconstructing a real breaking story</h3>
+        <p>On 2 January 2024 a Japan Airlines jet collided with a Coast Guard plane while landing at Tokyo's Haneda Airport. All 379 people on the airliner got out; five of the six Coast Guard crew died. Using archived copies of NHK's Japanese coverage (the root source for most early facts), CNN's live blog and AP's story from the Wayback Machine, I traced ten claims through the first day: where each came from, how it changed, and whether it held up against the investigators' later findings.</p>
+        <div class="findings">
+          <div class="finding"><b>One source, many outlets.</b> Every casualty figure in CNN's first hour of crash coverage cited one broadcaster, NHK, and AP's first version leaned on NHK too. Outlets that seemed to agree were relaying the same report.</div>
+          <div class="finding"><b>Copies freeze a moving number.</b> NHK's injury count went from 1 to 17 to 14 over the evening. CNN kept 17 and AP used 14, so each froze a different moment of the same source. One CNN post also gave 347 passengers instead of 367.</div>
+          <div class="finding"><b>Official isn't final.</b> JAL's own timeline put the evacuation at about 20 minutes. Investigators later found it took 11.</div>
+          <div class="finding"><b>Each outlet quoted half an answer.</b> Asked whether the jet was cleared to land, JAL said it couldn't say yet, then that it would normally assume so. NHK ran the whole answer. CNN quoted the first half, AP the second.</div>
+          <div class="finding"><b>Translation shifts meaning.</b> NHK reported the Coast Guard captain as 重傷, "seriously injured," which proved right. In CNN's English it became "critical condition." An acceptable imprecision here, but a reason to keep the original wording beside any translation.</div>
+          <div class="finding"><b>Summaries lose sources.</b> A CNN roundup merged an NHK figure and a JAL figure into one sentence with no attribution.</div>
+          <div class="finding"><b>Holding back works.</b> Both outlets called the Coast Guard crew "missing" until police or the transport minister confirmed the deaths.</div>
+        </div>
+        <p><span class="todo">Fill in</span>Link the full reconstruction once you've reviewed it and made the open editorial calls.</p>
+        <h3>2. Published corrections</h3>
+        <p><span class="todo">Fill in</span>20–30 corrections and editors' notes from breaking-news stories, tagged by cause: repeating another outlet, misidentified media, an unverified post, a superseded number.</p>
+        <h3>3. What journalists have written</h3>
+        <p><span class="todo">Fill in</span>Trade press on breaking-news errors, and the European Journalism Centre's free <a href="https://datajournalism.com/read/handbook/verification-1" target="_blank" rel="noopener">Verification Handbook</a>.</p>
+        <h3>4. My own reporting</h3>
+        <p><span class="todo">Fill in</span>A fast-moving story you worked on yourself: what you checked, what you almost got wrong.</p>
+        <h3>5. Usability tests</h3>
+        <p>Five people, about 15 minutes each, thinking aloud. They don't need newsroom experience: the tests check whether the screen is clear, not whether the journalism is right.</p>
+        <ol class="tasks">
+          <li>Three sources report a worker was killed. Can it be published? Measures whether people notice that all three trace back to one broadcast.</li>
+          <li>The county coroner confirms the death on the record. Log it and publish. Measures time and errors.</li>
+          <li>A video in the live story turns out to be from another fire. Fix the story. Measures whether the correction is found and completed.</li>
+          <li>A county briefing says three workers were hospitalized; the story says two. Update it. Measures whether the number check is noticed and used.</li>
+        </ol>
+        <h3>Assumptions and evidence</h3>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Assumption</th><th>Evidence</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Apparent corroboration is often one source repeated.</td><td>Haneda: every casualty figure in CNN's first hour traced to NHK.</td><td><span class="status ok">Supported, 1 case</span></td></tr>
+            <tr><td>Official figures get replaced during a story.</td><td>Haneda: injury counts changed through the day; the evacuation time was revised by investigators.</td><td><span class="status ok">Supported, 1 case</span></td></tr>
+            <tr><td>Errors survive because nobody connects them to every line.</td><td>Haneda: the wrong passenger count stayed on CNN's page for at least two days, beside the right one.</td><td><span class="status ok">Supported, 1 case</span></td></tr>
+            <tr><td>Editors think in claims, not posts.</td><td>Usability tests.</td><td><span class="status">Untested</span></td></tr>
+            <tr><td>Duplicate checking wastes time.</td><td>Can't be seen from the public record; needs access to a newsroom.</td><td><span class="status">Untested</span></td></tr>
+          </tbody>
+        </table></div>
+        <h3>What this research can't tell me</h3>
+        <p>Archives show what was published, not how decisions were made inside the newsroom. I compared two English-language outlets against NHK, and my readings of the Japanese still need checking by a native reader. One event is a case, not a pattern; the corrections study is meant to test whether these findings generalize.</p>
+      </section>
+
+      <section>
+        <h2>Design decisions</h2>
+        <p>Each decision names the alternative I considered and why I didn't take it.</p>
+        <div class="decision"><div class="dn">Organize by claim, not by feed</div><dl>
+          <dt>Chose</dt><dd>Posts and alerts are grouped into claims. Sixty-three posts about a death become one claim with sixty-three mentions.</dd>
+          <dt>Instead of</dt><dd>A faster, better-filtered feed.</dd>
+          <dt>Because</dt><dd>The editor's decision is about a claim. A feed makes them repeat the same judgment every time a new post appears.</dd></dl></div>
+        <div class="decision"><div class="dn">Count independent sources, not reports</div><dl>
+          <dt>Chose</dt><dd>Every source records what it's based on. Reports that repeat another report are nested under it and don't add to the count.</dd>
+          <dt>Instead of</dt><dd>A simple source count, or a confidence score.</dd>
+          <dt>Because</dt><dd>Three outlets citing one broadcast is one source. A plain count would call that corroborated. A score would hide the reason.</dd></dl></div>
+        <div class="decision"><div class="dn">Say what's missing, not only what's wrong</div><dl>
+          <dt>Chose</dt><dd>Each claim states what it needs to meet the newsroom's standard, such as "one more independent source, or an official on the record."</dd>
+          <dt>Instead of</dt><dd>A status label alone.</dd>
+          <dt>Because</dt><dd>"Unverified" doesn't tell a reporter what to do next. The missing piece is the next assignment.</dd></dl></div>
+        <div class="decision"><div class="dn">Show who's checking what</div><dl>
+          <dt>Chose</dt><dd>Each claim shows who has it and what they're doing, and anyone can take an unassigned claim in one click.</dd>
+          <dt>Instead of</dt><dd>Assignments in the chat channel.</dd>
+          <dt>Because</dt><dd>Assignments in chat scroll away within minutes, and that's how two people end up calling the same official.</dd></dl></div>
+        <div class="decision"><div class="dn">Link every published line to its claim</div><dl>
+          <dt>Chose</dt><dd>When a claim is marked false, every line that depends on it is flagged in the live story, with a button to correct it.</dd>
+          <dt>Instead of</dt><dd>Relying on the editor to remember.</dd>
+          <dt>Because</dt><dd>Corrections are where a newsroom's credibility is won or lost, and memory is the weakest link during breaking news.</dd></dl></div>
+        <div class="decision"><div class="dn">Status by shape as well as color</div><dl>
+          <dt>Chose</dt><dd>Each verification level has its own glyph: dotted, half-filled, ringed, solid, hatched.</dd>
+          <dt>Instead of</dt><dd>Color alone.</dd>
+          <dt>Because</dt><dd>The glyphs still read for people with color-vision deficiency and on a dim second monitor at 2 a.m.</dd></dl></div>
+      </section>
+
+      <section>
+        <h2>What the research changed</h2>
+        <p>Four changes came directly out of the Haneda reconstruction. Each is in the prototype.</p>
+        <div class="decision"><div class="dn">"Confirmed" can expire</div><dl>
+          <dt>Evidence</dt><dd>JAL's own evacuation time was later replaced by the investigators' figure, and injury counts changed through the day. Neither was false when published.</dd>
+          <dt>Change</dt><dd>A new <strong>Superseded</strong> status, separate from False. Confirmation now says who confirmed it and as of when. The old line stays in the story, struck through.</dd>
+          <dt>Try it</dt><dd>C11, a county briefing that says three workers were hospitalized.</dd></dl></div>
+        <div class="decision"><div class="dn">Check numbers across the whole story</div><dl>
+          <dt>Evidence</dt><dd>One CNN page carried 367 and 347 passengers at the same time.</dd>
+          <dt>Change</dt><dd>Lines that give the same quantity different values are flagged, and publishing a new figure offers to supersede the old line.</dd>
+          <dt>Try it</dt><dd>Publish C11 either way and watch the live story.</dd></dl></div>
+        <div class="decision"><div class="dn">Keep the source's exact words</div><dl>
+          <dt>Evidence</dt><dd>JAL's answer on landing clearance held both a refusal and an assumption; CNN and AP each kept one half. Separately, "seriously injured" became "critical" in translation.</dd>
+          <dt>Change</dt><dd>Each source can carry an exact quote, shown under it, separate from the reporter's note.</dd>
+          <dt>Try it</dt><dd>C10: "accounted for" doesn't mean unhurt, which matters next to C3 and C11.</dd></dl></div>
+        <div class="decision"><div class="dn">Summaries keep their sources</div><dl>
+          <dt>Evidence</dt><dd>A roundup merged figures from two sources into one unattributed sentence.</dd>
+          <dt>Change</dt><dd>The "What we know" box at the top of the live story lists each point with its source, built from the claims themselves.</dd>
+          <dt>Try it</dt><dd>Publish or supersede anything and the summary updates.</dd></dl></div>
+      </section>
+
+      <section>
+        <h2>The verification ladder</h2>
+        <figure class="figure">
+          <div class="ladder">
+            <span class="pill unverified"><i class="g unverified"></i>Unverified</span><span>Only mentions so far. Nobody has reached a source.</span>
+            <span class="pill single"><i class="g single"></i>Single source</span><span>One independent source. Publishable only as an attributed on-record statement.</span>
+            <span class="pill corroborated"><i class="g corroborated"></i>Corroborated</span><span>Two or more independent sources. Publishable with attribution.</span>
+            <span class="pill confirmed"><i class="g confirmed"></i>Confirmed</span><span>An official or public record, on the record.</span>
+            <span class="pill superseded"><i class="g superseded"></i>Superseded</span><span>Was right when published; newer information has replaced it.</span>
+            <span class="pill debunked"><i class="g debunked"></i>False</span><span>Shown to be wrong. Anything relying on it must be corrected.</span>
+          </div>
+          <figcaption>The rules are a sample newsroom standard. In a real deployment each newsroom would set its own.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>Iterations</h2>
+        <div class="todo-block"><p><span class="todo">Fill in</span>Add your Figma frames: sketches, the first wireframe, and the version after testing. For each round, one sentence on what you learned and what changed.</p></div>
+      </section>
+
+      <section>
+        <h2>How I'd know it works</h2>
+        <ul>
+          <li><strong>Time to publish:</strong> minutes from a claim's first report to publication, for claims that meet the standard.</li>
+          <li><strong>Duplicate checks:</strong> claims worked on by more than one person without knowing it.</li>
+          <li><strong>Time to correct:</strong> minutes from a claim being marked false to the published fix.</li>
+          <li><strong>Traceability:</strong> share of published lines that can be traced to a logged source.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>What's next</h2>
+        <ul>
+          <li>A phone view for reporters in the field to log sources and see their assignments.</li>
+          <li>Automatic grouping of posts into claims, with the editor confirming each group.</li>
+          <li>Reverse image search built into the verification workflow.</li>
+          <li>An after-action review mode for the standards editor.</li>
+        </ul>
+        <p><a class="cta" href="#prototype">Open the prototype</a></p>
+      </section>
+
+      <p class="foot">The newsroom, the plant, the people and the event are fictional. The prototype is hand-built in HTML, CSS and JavaScript.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+(() => {
+const T = (h,m) => h*60 + m;
+const NOW = T(16,42);
+const fmt = m => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S = (id, who, type, onRecord, t, note, via) => ({id, who, type, onRecord, t, note, via: via || null});
+
+const CLAIMS = [
+  {id:'C1', text:'Fire at Calder Resin Works on Route 9', first:T(15,54), mentions:41, assignee:'Priya N.', task:'On scene',
+    sources:[S('a','East Marlow Fire Dept., Capt. R. Alvarez (PIO)','Official',true,T(16,2),'Phone call with Priya N.'), S('b','Priya N., on scene','Staff',true,T(16,10),'Saw flames and six fire units')],
+    copy:'A fire broke out Tuesday afternoon at the Calder Resin Works plant on Route 9, the East Marlow Fire Department said.', published:T(16,6)},
+  {id:'C2', text:'Shelter-in-place order within 1 mile of the plant', first:T(16,8), mentions:18, assignee:'Dana L.', task:'Monitoring county alerts',
+    sources:[S('a','Marlow County Emergency Management alert','Official',true,T(16,8),'Official alert system')],
+    copy:'County emergency officials ordered residents within one mile of the plant to shelter in place, according to an alert issued at 4:08 p.m.', published:T(16,12)},
+  {id:'C3', text:'Two workers taken to Marlow General Hospital', first:T(16,5), mentions:12, assignee:'Dana L.', task:'Following up on conditions',
+    sources:[S('a','EMS radio traffic','Scanner',false,T(16,5),'Two patients transported from the plant'), S('b','Marlow General Hospital spokesperson','Official',true,T(16,24),'Emailed statement')],
+    qty:{key:'hospitalized', n:2, label:'workers hospitalized'},
+    copy:'Two workers were taken to Marlow General Hospital, a hospital spokesperson said. Their conditions were not released.', published:T(16,27)},
+  {id:'C4', text:'One worker killed in the fire', first:T(16,21), mentions:63, assignee:'Priya N.', task:'Calling the county coroner',
+    sources:[S('a','WMRL Channel 8 broadcast','Outlet',false,T(16,21),'Cites "a source close to the investigation"'),
+             S('b','@MarlowScanner on X','Social',false,T(16,23),'Screenshot of the Channel 8 broadcast','a'),
+             S('c','AP news alert','Outlet',false,T(16,25),'Credits Channel 8','a')],
+    copy:'One worker was killed in the fire, the Marlow County coroner said.', published:null},
+  {id:'C5', text:'Explosion heard up to 3 miles away', first:T(15,52), mentions:88, assignee:'Marcus O.', task:'Done',
+    sources:[S('a','Resident, Birch Lane (2.8 mi away)','Eyewitness',true,T(16,15),'Phone, Marcus O.'), S('b','Resident, Fulton Street','Eyewitness',true,T(16,19),'Phone, Marcus O.'), S('c','Clerk, Route 9 gas station','Eyewitness',true,T(16,26),'Phone, Marcus O.')],
+    copy:'Residents as far as three miles away said they heard a loud explosion shortly before 4 p.m.', published:T(16,30)},
+  {id:'C6', text:'Plant was cited for safety violations in 2023', first:T(16,29), mentions:4, assignee:'Dana L.', task:'Searching OSHA inspection records',
+    sources:[S('a','Former plant employee','Insider',false,T(16,29),'Says the plant was fined in 2023. Background only.')],
+    copy:'Federal regulators cited the plant for safety violations in 2023, OSHA records show.', published:null},
+  {id:'C7', text:'Smoke cloud moving toward Lincoln Elementary', first:T(16,3), mentions:120, assignee:'Marcus O.', task:'Traced video origin',
+    sources:[S('a','Video posted by @eastmarlowmom','Social',false,T(16,3),'Widely shared; no location data')],
+    debunked:{by:'Marcus O.', t:T(16,31), why:'Reverse image search matches footage of a 2021 warehouse fire in another state.'},
+    copy:'Video shared on social media appears to show smoke drifting toward Lincoln Elementary School.', published:T(16,9)},
+  {id:'C8', text:'Route 9 closed between Elm St. and Mill Rd.', first:T(16,33), mentions:7, assignee:null, task:null,
+    sources:[S('a','State DOT traffic alert','Official',true,T(16,33),"Posted on the department's verified account")],
+    copy:'Route 9 is closed between Elm Street and Mill Road, the state Department of Transportation said.', published:null},
+  {id:'C9', text:'Marlow Heights neighborhood being evacuated', first:T(16,34), mentions:9, assignee:null, task:null, sources:[],
+    copy:'Residents of the Marlow Heights neighborhood are being evacuated.', published:null},
+  {id:'C10', text:'Company says all employees are accounted for', first:T(16,36), mentions:5, assignee:'Dana L.', task:'Asked company about hospitalized workers',
+    sources:[S('a','Calder Resin Works statement','Company',true,T(16,36),'Emailed to the newsroom')],
+    copy:'Calder Resin Works said in a statement that all employees have been accounted for.', published:null},
+  {id:'C11', text:'Three workers taken to hospital', first:T(16,40), mentions:3, assignee:'Dana L.', task:'At the county briefing',
+    sources:[S('a','Marlow County Emergency Management, Director K. Osei','Official',true,T(16,40),'Live briefing, Dana L.')],
+    qty:{key:'hospitalized', n:3, label:'workers hospitalized'},
+    copy:'Three workers were taken to the hospital, the county emergency management director said at a 4:40 p.m. briefing.', published:null},
+];
+const QUOTES = {
+  'C1.a':'We have a working fire at the Calder plant on Route 9. Units are on scene.',
+  'C2.a':'Residents within one mile of Calder Resin Works should shelter in place.',
+  'C3.b':'We received two patients from the incident at Calder Resin Works.',
+  'C4.a':'A source close to the investigation tells Channel 8 that one worker has died.',
+  'C10.a':'All employees have been accounted for.',
+  'C11.a':'Three workers have been transported to the hospital. That number could change.',
+};
+CLAIMS.forEach(c => c.sources.forEach(s => { const q = QUOTES[c.id + '.' + s.id]; if (q) s.quote = q; }));
+const CONFLICTS = [
+  {a:'C4', b:'C10', note:'The company says all employees are accounted for.'},
+  {a:'C9', b:'C2', note:'Officials ordered residents to shelter in place, not to evacuate.'},
+];
+const byId = id => CLAIMS.find(c => c.id === id);
+const state = { sel:'C4', logOpen:false, corrections:[], undo:null };
+
+/* ---------- verification logic ---------- */
+function roots(c){ return c.sources.filter(s => !s.via || !c.sources.some(x => x.id === s.via)); }
+function status(c){
+  if (c.debunked) return 'debunked';
+  if (c.superseded) return 'superseded';
+  const r = roots(c);
+  if (r.some(s => s.onRecord && (s.type === 'Official' || s.type === 'Records'))) return 'confirmed';
+  if (r.length >= 2) return 'corroborated';
+  if (r.length === 1) return 'single';
+  return 'unverified';
+}
+const LABEL = {unverified:'Unverified', single:'Single source', corroborated:'Corroborated', confirmed:'Confirmed', superseded:'Superseded', debunked:'False'};
+const live = c => c.published && !c.corrected && !c.superseded;
+function mismatches(c){
+  if (!c.qty) return [];
+  return CLAIMS.filter(x => x !== c && x.qty && x.qty.key === c.qty.key && x.qty.n !== c.qty.n && live(x));
+}
+const shortWho = s => s.who.split(',')[0];
+function canPublish(c){
+  const st = status(c);
+  if (c.published) return {ok:false, why:'Already in the live story'};
+  if (st === 'debunked') return {ok:false, why:'Marked false'};
+  if (st === 'confirmed' || st === 'corroborated') return {ok:true, label:'Add to live story'};
+  if (st === 'single' && roots(c)[0].onRecord) return {ok:true, label:'Publish as attributed statement', attributed:true};
+  if (st === 'single') return {ok:false, why:'Our standard needs a second independent source or an official on the record'};
+  return {ok:false, why:'No source has been reached yet'};
+}
+function needs(c){
+  const st = status(c), r = roots(c);
+  if (st === 'debunked') return {head:'Do not publish', why: c.debunked.why};
+  if (st === 'superseded'){ const b = byId(c.superseded.by); return {head:'Replaced by newer information', why:`${b.id} has a newer figure from ${shortWho(roots(b)[0])}. This line was marked superseded at ${fmt(c.superseded.t)}. It isn't false; it's out of date.`}; }
+  if (st === 'confirmed'){ const o = r.find(s => s.onRecord && (s.type === 'Official' || s.type === 'Records')); return {head:'Meets the standard. Publishable.', why:`Confirmed by ${o.who}, on the record, as of ${fmt(o.t)}. Newer official information can still supersede it.`}; }
+  if (st === 'corroborated') return {head:'Meets the standard. Publishable with attribution.', why:`${r.length} independent sources agree.`};
+  if (st === 'single'){
+    const derived = c.sources.length - r.length;
+    let why = r[0].onRecord ? `${r[0].who} is on the record but is not an independent official source. Publish only as their statement.` : `${r[0].who} has not gone on the record.`;
+    if (derived) why = `${c.sources.length} reports, but ${derived === 1 ? 'one repeats' : 'all the others repeat'} ${r[0].who}. ` + why;
+    return {head:'Needs one more independent source, or an official on the record.', why};
+  }
+  return {head:'Needs a first source.', why:`${c.mentions} social posts mention this. Posts are mentions, not sources, until someone reaches the person behind them.`};
+}
+function conflictsOf(c){ return CONFLICTS.filter(x => x.a === c.id || x.b === c.id).map(x => ({other: x.a === c.id ? x.b : x.a, note:x.note})); }
+function stage(c){
+  const st = status(c);
+  if (st === 'debunked') return c.published && !c.corrected ? 'action' : 'closed';
+  if (st === 'superseded') return 'closed';
+  if (c.published) return mismatches(c).length ? 'action' : 'published';
+  if (canPublish(c).ok) return 'action';
+  return 'checking';
+}
+function flag(c){
+  const st = status(c), cp = canPublish(c);
+  if (st === 'debunked' && c.published && !c.corrected) return {cls:'false', t:'Correction needed'};
+  if (st === 'superseded') return {cls:'', t:'Superseded by ' + c.superseded.by};
+  if (mismatches(c).length) return {cls:'conflict', t: (c.published ? 'Numbers disagree with ' : 'Differs from live ') + mismatches(c).map(x => x.id).join(', ')};
+  if (!c.published && cp.ok) return {cls:'ready', t: cp.attributed ? 'Ready as statement' : 'Ready to publish'};
+  if (!c.published && conflictsOf(c).length) return {cls:'conflict', t:'Conflicts with ' + conflictsOf(c).map(x => x.other).join(', ')};
+  return null;
+}
+
+/* ---------- event strip ---------- */
+function renderEvent(){
+  const ready = CLAIMS.filter(c => !c.published && canPublish(c).ok).length;
+  const fixes = CLAIMS.filter(c => status(c) === 'debunked' && c.published && !c.corrected).length;
+  const unassigned = CLAIMS.filter(c => !c.assignee && stage(c) !== 'closed').length;
+  const vals = [2,9,24,46,61,70,57,52,44,40,36], W = 150, H = 40;
+  const max = 75, step = W / (vals.length - 1);
+  const pts = vals.map((v,i) => [i*step, H - 4 - v/max*(H-8)]);
+  const line = pts.map((p,i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const last = pts[pts.length-1];
+  document.getElementById('event').innerHTML = `
+    <div class="ev-title"><div class="lab"><i></i>Breaking · started 15:51</div><h1>Calder Resin Works fire, East Marlow</h1><div class="sub">Running <span class="mono">${NOW - T(15,51)} min</span> · 4 staff on the story</div></div>
+    <div class="kpi"><div class="lab">Claims</div><div class="val">${CLAIMS.length}</div><div class="sub">${CLAIMS.filter(live).length} in the story</div></div>
+    <div class="kpi"><div class="lab">Ready</div><div class="val ${ready?'ready':''}">${ready}</div><div class="sub">meet the standard</div></div>
+    <div class="kpi"><div class="lab">Corrections</div><div class="val ${fixes?'false':''}">${fixes}</div><div class="sub">${fixes ? 'needed now' : 'none pending'}</div></div>
+    <div class="kpi"><div class="lab">Unassigned</div><div class="val">${unassigned}</div><div class="sub">claims nobody has</div></div>
+    <div class="kpi spark"><svg width="${W}" height="${H}" viewBox="-2 0 ${W+6} ${H}" role="img" aria-label="Social mentions per 5 minutes, peaking at 70 around 16:15 and now at 36">
+      <path d="${line} L ${W} ${H} L 0 ${H} Z" fill="var(--accent-soft)"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+      <circle cx="${last[0]}" cy="${last[1]}" r="3" fill="var(--accent)"/></svg>
+      <div><div class="lab">Mentions / 5 min</div><div class="sub"><span class="mono">36</span> now · peak <span class="mono">70</span> at 16:15</div></div></div>`;
+}
+
+/* ---------- queue ---------- */
+const GROUPS = [['action','Needs a decision'],['checking','Being checked'],['published','In the story'],['closed','Closed']];
+function order(){ const o = []; GROUPS.forEach(([g]) => CLAIMS.filter(c => stage(c) === g).forEach(c => o.push(c))); return o; }
+function renderQueue(){
+  document.getElementById('qmeta').textContent = `${CLAIMS.length} tracked`;
+  document.getElementById('queue').innerHTML = GROUPS.map(([g, label]) => {
+    const list = CLAIMS.filter(c => stage(c) === g);
+    if (!list.length) return '';
+    return `<div class="grp"><span>${label}</span><span class="mono">${list.length}</span></div><ul class="qlist" role="listbox" aria-label="${label}">` + list.map(c => {
+      const st = status(c), f = flag(c);
+      return `<li><button class="qi" role="option" data-cid="${c.id}" aria-selected="${c.id === state.sel}">
+        <i class="g ${st}" title="${LABEL[st]}"></i><span class="tx">${esc(c.text)}</span><span class="id">${c.id}</span>
+        <span class="ln">${f ? `<span class="flag ${f.cls}">${esc(f.t)}</span>` : `<span>${LABEL[st]}</span>`}<span>${c.assignee ? esc(c.assignee) : '<b>Unassigned</b>'}</span><span class="mono">${c.mentions} mentions</span></span>
+      </button></li>`;
+    }).join('') + '</ul>';
+  }).join('');
+}
+
+/* ---------- workbench ---------- */
+function srcRow(s, derived){
+  return `<div class="src ${derived ? 'derived' : ''}"><span class="tag">${esc(s.type)}</span><span class="who">${esc(s.who)}</span><span class="t">${fmt(s.t)}</span>
+    <span class="nt">${s.onRecord ? '<span class="rec">On the record</span> · ' : '<span class="rec bg">Not on the record</span> · '}${esc(s.note || '')}${derived ? ' · <b>Repeats the source above</b>' : ''}</span>${s.quote ? `<blockquote class="q">“${esc(s.quote)}”</blockquote>` : ''}</div>`;
+}
+function renderWork(){
+  const c = byId(state.sel), el = document.getElementById('work');
+  if (!c){ el.innerHTML = '<p class="empty">Select a claim.</p>'; return; }
+  const st = status(c), n = needs(c), cp = canPublish(c), r = roots(c), cf = conflictsOf(c);
+  const tree = r.length ? `<ul class="tree">${r.map(root => `<li class="root">${srcRow(root,false)}${c.sources.filter(s => s.via === root.id).map(s => srcRow(s,true)).join('')}</li>`).join('')}</ul>`
+    : `<div class="empty">No sources yet. ${c.mentions} posts mention this claim, but nobody has reached a person behind them.</div>`;
+  let action = '';
+  if (st === 'debunked'){
+    action = c.published && !c.corrected
+      ? `<div class="actions"><button class="btn danger" data-act="correct">Correct the live story</button><span class="note">This claim appears in the line published at ${fmt(c.published)}.</span></div>`
+      : `<div class="actions"><span class="note">${c.corrected ? 'The live story has been corrected.' : 'Not in the live story.'}</span></div>`;
+  } else if (st === 'superseded'){
+    action = `<div class="actions"><span class="note">The old line stays in the story, struck through, so readers can see what changed.</span></div>`;
+  } else if (!c.published){
+    const mm = mismatches(c).length;
+    action = `<div class="actions"><button class="btn ${mm ? '' : 'primary'}" data-act="publish" ${cp.ok ? '' : 'disabled'}>${cp.ok ? (mm ? 'Publish as-is' : cp.label) : 'Add to live story'}</button><span class="note">${cp.ok ? 'Draft line: “' + esc(c.copy) + '”' : esc(cp.why) + '.'}</span></div>`;
+  } else {
+    action = `<div class="actions"><span class="note">Published at ${fmt(c.published)}.</span></div>`;
+  }
+  const events = [{t:c.first, s:'First seen in social posts'}]
+    .concat(c.sources.map(s => ({t:s.t, s:`Source logged: ${s.who}`})))
+    .concat(c.debunked ? [{t:c.debunked.t, s:`Marked false by ${c.debunked.by}`}] : [])
+    .concat(c.published ? [{t:c.published, s:'Added to live story'}] : [])
+    .concat(c.superseded ? [{t:c.superseded.t, s:`Superseded by ${c.superseded.by}`}] : [])
+    .sort((a,b) => a.t - b.t);
+  const opts = c.sources.map(s => `<option value="${s.id}">Repeats: ${esc(s.who)}</option>`).join('');
+  const mm = mismatches(c);
+  let numHTML = '';
+  if (mm.length && st !== 'superseded'){
+    const x = mm[0], newer = c.published && c.published < x.published ? x : c, older = newer === c ? x : c;
+    numHTML = `<div class="card numcheck"><h4><span>Number check</span></h4>
+      ${c.published ? 'Two lines in the live story give different numbers.' : 'The live story already gives a different number.'}
+      <div class="nums"><div>${x.id}${x.published ? ', live since ' + fmt(x.published) : ''}<b>${x.qty.n}</b>${x.qty.label}</div><div>${c.id}${c.published ? ', live since ' + fmt(c.published) : ', this claim'}<b>${c.qty.n}</b>${c.qty.label}</div></div>
+      <div class="actions">${c.published
+        ? `<button class="btn primary" data-act="supersede" data-old="${older.id}" data-new="${newer.id}">Mark ${older.id} superseded</button><span class="note">${older.id} stays visible, struck through.</span>`
+        : `<button class="btn primary" data-act="publish-supersede">Publish and mark ${x.id} superseded</button><span class="note">Publishing as-is leaves both numbers in the story.</span>`}</div></div>`;
+  }
+  el.innerHTML = `
+    <div class="card claimh"><div class="id">${c.id} · first seen ${fmt(c.first)}</div><h3>${esc(c.text)}</h3>
+      <div class="row"><span class="pill ${st}"><i class="g ${st}"></i>${LABEL[st]}</span>
+        <span>Checking: <b>${c.assignee ? esc(c.assignee) : 'nobody'}</b>${c.task ? ' · ' + esc(c.task) : ''}</span>
+        ${c.assignee === 'You' ? '' : `<button class="btn sm" data-act="take">${c.assignee ? 'Take over' : 'Take this claim'}</button>`}</div></div>
+    ${numHTML}
+    <div class="card need ${st}"><h4><span>${st === 'debunked' ? 'Marked false' : st === 'superseded' ? 'Superseded' : 'What it needs'}</span></h4><p>${esc(n.head)}</p><div class="why">${esc(n.why)}</div>${action}</div>
+    ${cf.map(x => `<div class="card conflict"><h4><span>Conflict</span></h4>${esc(x.note)} See <button data-cid="${x.other}">${x.other}: ${esc(byId(x.other).text)}</button>.</div>`).join('')}
+    <div class="card"><h4><span>Sources</span><span>${c.sources.length} report${c.sources.length === 1 ? '' : 's'}</span></h4>
+      <div class="indep"><span class="big">${r.length}</span><span class="of">independent source${r.length === 1 ? '' : 's'}${c.sources.length > r.length ? ` · ${c.sources.length - r.length} repeat${c.sources.length - r.length === 1 ? 's' : ''} another source and ${c.sources.length - r.length === 1 ? "doesn't" : "don't"} count` : ''}</span></div>
+      ${tree}
+      <div class="mentions"><span class="mono">${c.mentions}</span> social posts mention this claim. They aren't counted as sources.</div>
+      ${st === 'debunked' || st === 'superseded' ? '' : (state.logOpen ? `
+      <form class="log" id="logform">
+        <label class="full">Who<input type="text" id="log-who" placeholder="e.g. Marlow County coroner's office" required></label>
+        <label>Type<select id="log-type"><option>Official</option><option>Records</option><option>Eyewitness</option><option>Staff</option><option>Outlet</option><option>Company</option><option>Insider</option><option>Social</option></select></label>
+        <label>Based on<select id="log-via"><option value="">Independent</option>${opts}</select></label>
+        <label class="full">Exact words <span>(optional, quote what they said, not your summary)</span><textarea id="log-quote" rows="2" placeholder="e.g. “We can confirm one fatality.”"></textarea></label>
+        <label class="chk full"><input type="checkbox" id="log-rec" checked> On the record</label>
+        <div class="actions"><button class="btn primary" type="submit">Log source</button><button class="btn" type="button" data-act="cancel-log">Cancel</button></div>
+      </form>` : `<div class="actions"><button class="btn" data-act="open-log">Log a source</button></div>`)}
+    </div>
+    <div class="card"><h4><span>Timeline</span></h4><ul class="timeline">${events.map(e => `<li><span class="t">${fmt(e.t)}</span><span>${esc(e.s)}</span></li>`).join('')}</ul></div>`;
+}
+
+/* ---------- story ---------- */
+function renderStory(){
+  const pub = CLAIMS.filter(c => c.published).sort((a,b) => b.published - a.published);
+  const items = state.corrections.map(k => `<li class="ln-item correction"><span class="t">${fmt(k.t)}</span><span class="cp">Correction: ${esc(k.text)}</span></li>`);
+  pub.forEach(c => {
+    const st = status(c), bad = st === 'debunked' && !c.corrected;
+    const r = roots(c), mm = mismatches(c);
+    const src = r.length ? r.map(s => s.who).join('; ') : 'No logged source';
+    let numline = '';
+    if (live(c) && mm.length){
+      const x = mm[0], newer = c.published > x.published ? c : x, older = newer === c ? x : c;
+      numline = `<span class="numline">Numbers disagree: ${x.id} says ${x.qty.n}, this says ${c.qty.n} <button class="btn sm" data-act="supersede" data-old="${older.id}" data-new="${newer.id}">Mark ${older.id} superseded</button></span>`;
+    }
+    items.push(`<li class="ln-item ${bad ? 'bad' : ''} ${c.corrected || c.superseded ? 'struck' : ''} ${numline ? 'mismatch' : ''} ${c.id === state.sel ? 'sel' : ''}" data-cid="${c.id}">
+      <span class="t">${fmt(c.published)}</span><span class="cp">${esc(c.copy)}</span>
+      ${bad ? `<span class="badline">Relies on ${c.id}, marked false at ${fmt(c.debunked.t)} <button class="btn sm danger" data-act="correct" data-for="${c.id}">Correct</button></span>` : ''}
+      ${numline}
+      ${c.superseded ? `<span class="supline">Updated at ${fmt(c.superseded.t)}: see ${c.superseded.by}</span>` : ''}
+      <span class="mt"><span class="pill ${st}"><i class="g ${st}"></i>${LABEL[st]}</span><span>${c.id} · ${esc(src)}</span></span></li>`);
+  });
+  document.getElementById('lines').innerHTML = items.join('');
+  const known = CLAIMS.filter(c => live(c) && status(c) !== 'debunked').sort((a,b) => a.published - b.published);
+  document.getElementById('summary').innerHTML = `<h4><span>What we know</span><span>each point keeps its source</span></h4>
+    <ul>${known.map(c => `<li>${esc(c.text)}. <span class="st">${esc(roots(c).map(shortWho).join(' · '))}</span>${mismatches(c).length ? ' <span class="st warn">· numbers disagree</span>' : ''}</li>`).join('')}</ul>`;
+  const latest = Math.max(...pub.map(c => c.published), ...state.corrections.map(k => k.t), 0);
+  document.getElementById('updated').textContent = fmt(latest);
+}
+
+function render(){ renderEvent(); renderQueue(); renderWork(); renderStory(); }
+
+/* ---------- actions ---------- */
+let toastTimer;
+function toast(html, undoable){
+  const t = document.getElementById('toast');
+  t.innerHTML = html + (undoable ? ' <button data-act="undo">Undo</button>' : '');
+  t.hidden = false; clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; state.undo = null; }, 8000);
+}
+function snapshot(){ return JSON.stringify({claims: CLAIMS.map(c => ({id:c.id, published:c.published, corrected:!!c.corrected, superseded:c.superseded || null, assignee:c.assignee, task:c.task, sources:c.sources})), corrections: state.corrections}); }
+function restore(snap){
+  const s = JSON.parse(snap);
+  s.claims.forEach(x => { const c = byId(x.id); c.published = x.published; c.corrected = x.corrected; c.superseded = x.superseded; c.assignee = x.assignee; c.task = x.task; c.sources = x.sources; });
+  state.corrections = s.corrections;
+}
+let clock = NOW;
+function publish(){
+  const c = byId(state.sel), cp = canPublish(c); if (!cp.ok) return;
+  state.undo = snapshot();
+  c.published = ++clock;
+  render();
+  toast(`Added <b>${c.id}</b> to the live story${cp.attributed ? ' as an attributed statement' : ''}.`, true);
+}
+function supersede(oldId, newId, silent){
+  const o = byId(oldId); if (!o || o.superseded) return;
+  if (!silent) state.undo = snapshot();
+  o.superseded = {by:newId, t: silent ? clock : ++clock};
+  if (!silent){ render(); toast(`Marked <b>${oldId}</b> superseded by ${newId}. The old line stays visible, struck through.`, true); }
+}
+function publishSupersede(){
+  const c = byId(state.sel), cp = canPublish(c); if (!cp.ok) return;
+  state.undo = snapshot();
+  const mm = mismatches(c);
+  c.published = ++clock;
+  mm.forEach(x => supersede(x.id, c.id, true));
+  render();
+  toast(`Added <b>${c.id}</b> and marked ${mm.map(x => x.id).join(', ')} superseded.`, true);
+}
+function correct(id){
+  const c = byId(id || state.sel); if (!c || !c.published || c.corrected) return;
+  state.undo = snapshot();
+  c.corrected = true;
+  state.corrections.unshift({t: ++clock, text:`An earlier version of this story included a video said to show smoke drifting toward Lincoln Elementary School. The video was from an unrelated fire in 2021 and has been removed.`});
+  state.sel = c.id; render();
+  toast(`Corrected the live story. Correction note added at <span class="mono">${fmt(clock)}</span>.`, true);
+}
+function take(){
+  const c = byId(state.sel); state.undo = snapshot();
+  const prev = c.assignee; c.assignee = 'You'; c.task = 'Just assigned';
+  render(); toast(prev ? `You took over ${c.id} from ${esc(prev)}. They'll be notified.` : `${c.id} is yours.`, true);
+}
+function logSource(e){
+  e.preventDefault();
+  const c = byId(state.sel), who = document.getElementById('log-who').value.trim();
+  if (!who){ document.getElementById('log-who').focus(); return; }
+  state.undo = snapshot();
+  const before = status(c);
+  const id = 's' + (c.sources.length + 1) + Date.now() % 1000;
+  const src = S(id, who, document.getElementById('log-type').value, document.getElementById('log-rec').checked, ++clock, 'Logged by you', document.getElementById('log-via').value || null);
+  const q = document.getElementById('log-quote').value.trim(); if (q) src.quote = q.replace(/^["“]|["”]$/g, '');
+  c.sources.push(src);
+  state.logOpen = false;
+  const after = status(c);
+  render();
+  toast(before === after ? `Source logged. ${c.id} is still ${LABEL[after].toLowerCase()}.` : `Source logged. ${c.id} moved from ${LABEL[before]} to <b>${LABEL[after]}</b>.`, true);
+}
+
+document.addEventListener('click', e => {
+  const act = e.target.closest('[data-act]');
+  if (act){
+    const a = act.dataset.act;
+    if (a === 'publish') publish();
+    else if (a === 'correct') correct(act.dataset.for);
+    else if (a === 'supersede') supersede(act.dataset.old, act.dataset.new);
+    else if (a === 'publish-supersede') publishSupersede();
+    else if (a === 'take') take();
+    else if (a === 'open-log'){ state.logOpen = true; renderWork(); const w = document.getElementById('log-who'); if (w) w.focus(); }
+    else if (a === 'cancel-log'){ state.logOpen = false; renderWork(); }
+    else if (a === 'undo' && state.undo){ restore(state.undo); state.undo = null; document.getElementById('toast').hidden = true; render(); }
+    return;
+  }
+  const cl = e.target.closest('#view-prototype [data-cid]');
+  if (cl && cl.dataset.cid !== state.sel){ state.sel = cl.dataset.cid; state.logOpen = false; render(); }
+});
+document.addEventListener('submit', e => { if (e.target.id === 'logform') logSource(e); });
+document.addEventListener('keydown', e => {
+  if (document.getElementById('view-prototype').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.matches && e.target.matches('input,select,textarea')) return;
+  const o = order(), i = o.findIndex(c => c.id === state.sel);
+  if (e.key === 'ArrowDown' || e.key === 'j'){ e.preventDefault(); state.sel = o[Math.min(i+1, o.length-1)].id; state.logOpen = false; render(); focusSel(); }
+  else if (e.key === 'ArrowUp' || e.key === 'k'){ e.preventDefault(); state.sel = o[Math.max(i-1, 0)].id; state.logOpen = false; render(); focusSel(); }
+});
+function focusSel(){ const el = document.querySelector(`.qi[data-cid="${state.sel}"]`); if (el) el.focus(); }
+
+/* ---------- routing ---------- */
+function route(){
+  const v = location.hash === '#case-study' ? 'case-study' : 'prototype';
+  document.getElementById('view-prototype').hidden = v !== 'prototype';
+  document.getElementById('view-case-study').hidden = v !== 'case-study';
+  document.querySelectorAll('.tabs a').forEach(a => { if (a.dataset.view === v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  if (v === 'case-study') document.getElementById('view-case-study').scrollTop = 0;
+}
+window.addEventListener('hashchange', route);
+route();
+render();
+})();
+</script>
