@@ -34,4 +34,4 @@ The case study's "What the research changed" section walks through each one.
 
 ## Notes
 
-The newsroom, plant, people and event in the prototype are fictional. Translations from Japanese in the research file are machine-assisted and awaiting review by a native reader.
+The newsroom, plant, people and event in the prototype are fictional. Translations from Japanese in the research file were drafted with machine assistance and reviewed by the author.

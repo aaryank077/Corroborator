@@ -21,7 +21,7 @@ All times are UTC. **T+** = time since the collision. Add 9 hours for Japan time
 - **CNN live blog** ([final archived version](https://web.archive.org/web/20240104162518/https://www.cnn.com/asia/live-news/japan-earthquake-plane-fire-news-01-02-24/index.html)). The page's structured data gives each post's exact publish and edit time.
 - **NPR's copy of the AP story** ([earliest version](https://web.archive.org/web/20240102112231/https://www.npr.org/2024/01/02/1222442383/japan-plane-runway-fire)). Snapshots at 11:22, 13:41 and 21:18 on 2 January and 02:13 on 3 January. These are capture times.
 - **Kyodo** via [Ryukyu Shimpo](https://ryukyushimpo.jp/newspaper/entry-2647424.html) and **Aviation Wire** ([3 Jan](https://www.aviationwire.jp/archives/291581)) for JAL's statements.
-- Translations from Japanese are mine (Claude's). **To do:** have a Japanese reader check the quoted passages.
+- Translations from Japanese were drafted with machine assistance and reviewed by the author.
 
 ## Claim timeline
 
@@ -79,11 +79,9 @@ Translation: "Our current understanding is that it was on the runway. However, w
 
 - English coverage comes from two outlets. NHK is the only Japanese outlet checked in depth.
 - NHK and NPR times are Wayback capture times; the actual publish times may be earlier.
-- Translations are machine-assisted and should be checked by a Japanese reader before publication.
 - This shows what was published, not how decisions were made inside newsrooms.
 
 ## Next steps
 
-- [ ] Have a Japanese reader check the quoted passages.
 - [ ] Replace the Wikipedia end-state source with the JTSB report.
 - [ ] Decide whether "keep the original language" and "flag lines when the root source revises" become prototype changes.
