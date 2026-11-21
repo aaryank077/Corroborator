@@ -247,6 +247,29 @@ tr:last-child td{border-bottom:0}
 .tasks{counter-reset:t;list-style:none;padding:0}
 .tasks li{counter-increment:t;display:grid;grid-template-columns:34px 1fr;margin-bottom:8px}
 .tasks li::before{content:"T" counter(t);font:600 13px/1.65 var(--font-mono);color:var(--accent)}
+.round{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:22px 0;border-top:1px solid var(--line)}
+.round .rn{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.round .rn b{margin-top:0!important}
+.round:last-child{border-bottom:1px solid var(--line)}
+.round .rn span{display:block;font:600 11.5px var(--font-mono);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.round .rn b{display:block;font:700 18px/1.25 var(--font-copy);margin-top:3px;text-wrap:balance}
+.round.pending .rn span{color:var(--single)}
+.round .rc{min-width:0}
+.round .rc p:last-child{margin-bottom:0}
+.lesson{font-size:15px!important;color:var(--muted);border-left:2px solid var(--accent);padding-left:12px}
+.ba-one{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.ba{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:6px 0 16px}
+.ba figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden;min-width:0}
+.ba figcaption{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.ba figure:last-child figcaption{color:var(--accent)}
+.ba .static{pointer-events:none}
+.ba .lines .ln-item{padding:10px 12px}
+.ba .ln-item .cp{font-size:14px}
+.ba .root{margin:12px;border:1px solid var(--line);border-radius:4px}
+.ba-note{font-size:13px!important;line-height:1.45!important;color:var(--muted);margin:0!important;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.next{display:flex;gap:10px;align-items:baseline;font-size:15px;line-height:1.55;padding:10px 12px;border:1px dashed var(--line-2);border-radius:4px;margin:0 0 14px}
+@media (min-width:980px){ .ba{width:880px;margin-left:50%;transform:translateX(-50%)} }
+@media (max-width:640px){ .ba{grid-template-columns:1fr} }
 .cta{display:inline-flex;align-items:center;padding:10px 16px;border-radius:4px;background:var(--accent);color:var(--on-accent)!important;text-decoration:none;font-weight:700;font-size:14.5px}
 .foot{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 
@@ -451,7 +474,75 @@ tr:last-child td{border-bottom:0}
 
       <section>
         <h2>Iterations</h2>
-        <div class="todo-block"><p><span class="todo">Fill in</span>Add your Figma frames: sketches, the first wireframe, and the version after testing. For each round, one sentence on what you learned and what changed.</p></div>
+        <p>Four rounds so far, each set off by something I learned. The fifth is still to come.</p>
+
+        <div class="round">
+          <div class="rn"><span>Round 0</span><b>Choosing the problem</b></div>
+          <div class="rc">
+            <p>I started with a different project: a bed-placement console for hospital coordinators. The interface held up, but the research didn't. I had no way to reach the people who do that job, and desk research couldn't check the clinical rules the design depended on. So I switched to breaking news, a field I know, with a deep public record.</p>
+            <p class="lesson">Learned: pick a problem where you can get evidence, not just one that looks good on screen.</p>
+          </div>
+        </div>
+
+        <div class="round">
+          <div class="rn"><span>Round 1</span><b>First prototype</b></div>
+          <div class="rc">
+            <p>Built around three ideas: group posts into claims, count independent sources rather than reports, and say what each claim still needs. Five statuses, from Unverified to False.</p>
+            <div class="ba-one"><span class="pill unverified"><i class="g unverified"></i>Unverified</span><span class="pill single"><i class="g single"></i>Single source</span><span class="pill corroborated"><i class="g corroborated"></i>Corroborated</span><span class="pill confirmed"><i class="g confirmed"></i>Confirmed</span><span class="pill debunked"><i class="g debunked"></i>False</span></div>
+            <p class="lesson">Assumed: a claim moves up the ladder until it's confirmed, or it's shown to be false.</p>
+          </div>
+        </div>
+
+        <div class="round">
+          <div class="rn"><span>Round 2</span><b>After reconstructing Haneda</b></div>
+          <div class="rc">
+            <p>The CNN and AP archives broke that assumption. Figures that were confirmed when published, like JAL's evacuation time and the injury count, were later replaced without ever being false. And the same live page carried two different passenger counts. Four changes followed. The clearest two are below, drawn with the prototype's own components.</p>
+            <div class="ba" aria-label="Before and after: a changed figure in the live story">
+              <figure><figcaption>Before</figcaption>
+                <ul class="lines static">
+                  <li class="ln-item"><span class="t">16:43</span><span class="cp">Three workers were taken to the hospital, the county emergency management director said.</span><span class="mt"><span class="pill confirmed"><i class="g confirmed"></i>Confirmed</span></span></li>
+                  <li class="ln-item"><span class="t">16:27</span><span class="cp">Two workers were taken to Marlow General Hospital, a hospital spokesperson said.</span><span class="mt"><span class="pill confirmed"><i class="g confirmed"></i>Confirmed</span></span></li>
+                </ul>
+                <p class="ba-note">Both lines look settled. Nothing says they disagree.</p>
+              </figure>
+              <figure><figcaption>After</figcaption>
+                <ul class="lines static">
+                  <li class="ln-item"><span class="t">16:43</span><span class="cp">Three workers were taken to the hospital, the county emergency management director said.</span><span class="mt"><span class="pill confirmed"><i class="g confirmed"></i>Confirmed</span></span></li>
+                  <li class="ln-item struck"><span class="t">16:27</span><span class="cp">Two workers were taken to Marlow General Hospital, a hospital spokesperson said.</span><span class="supline">Updated at 16:43: see C11</span><span class="mt"><span class="pill superseded"><i class="g superseded"></i>Superseded</span></span></li>
+                </ul>
+                <p class="ba-note">A number check flags the clash, and the old line is superseded, not deleted, so readers can see what changed.</p>
+              </figure>
+            </div>
+            <div class="ba" aria-label="Before and after: a logged source">
+              <figure><figcaption>Before</figcaption>
+                <div class="root static"><div class="src"><span class="tag">Company</span><span class="who">Calder Resin Works statement</span><span class="t">16:36</span><span class="nt"><span class="rec">On the record</span> · Emailed to the newsroom</span></div></div>
+                <p class="ba-note">Only the reporter's note. Nothing shows what the company actually said.</p>
+              </figure>
+              <figure><figcaption>After</figcaption>
+                <div class="root static"><div class="src"><span class="tag">Company</span><span class="who">Calder Resin Works statement</span><span class="t">16:36</span><span class="nt"><span class="rec">On the record</span> · Emailed to the newsroom</span><blockquote class="q">“All employees have been accounted for.”</blockquote></div></div>
+                <p class="ba-note">The exact words sit under the note. "Accounted for" doesn't mean unhurt.</p>
+              </figure>
+            </div>
+            <p>The other two changes: a <strong>Superseded</strong> status with "confirmed by whom, as of when," and a "What we know" summary in which every point keeps its source.</p>
+            <p class="lesson">Learned: "true or false" was the wrong model for a live story. Most problems were facts that went out of date.</p>
+          </div>
+        </div>
+
+        <div class="round">
+          <div class="rn"><span>Round 3</span><b>After checking NHK's originals</b></div>
+          <div class="rc">
+            <p>Reading NHK's Japanese coverage, the root source, sharpened two findings. JAL's answer on landing clearance contained both a refusal and an assumption, and CNN and AP each quoted one half. That made the case for storing exact words much stronger than my first reading of it. NHK also called the Coast Guard captain 重傷, "seriously injured," which became "critical condition" in English.</p>
+            <div class="next"><span class="tag">Next</span>Keep a source's original-language wording beside the translation, so a shift like 重傷 → "critical" is visible to the editor. Not built yet.</div>
+            <p class="lesson">Learned: go back to the root source. Two English outlets agreeing told me less than one Japanese page.</p>
+          </div>
+        </div>
+
+        <div class="round pending">
+          <div class="rn"><span>Round 4</span><b>Figma and usability tests</b></div>
+          <div class="rc">
+            <div class="todo-block"><p><span class="todo">Fill in</span>Rebuild the main screens in Figma, then run the four test tasks with five people. Add a frame or two, and one sentence on what the tests changed. If nothing changed, say what held up and why.</p></div>
+          </div>
+        </div>
       </section>
 
       <section>
