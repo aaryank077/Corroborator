@@ -4,6 +4,8 @@ A concept workspace for a newsroom's breaking-news desk. It turns a flood of pos
 
 Product design portfolio project: a working prototype, a case study, and the research behind it.
 
+**Live:** [aaryank077.github.io/Corroborator/corroborate.html](https://aaryank077.github.io/Corroborator/corroborate.html)
+
 ## What's here
 
 | File | What it is |
