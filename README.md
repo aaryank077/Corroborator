@@ -21,7 +21,11 @@ No build step and no dependencies. The page loads fonts from Google Fonts and ot
 - **C7, the smoke video:** marked false but still in the live story. Use **Correct** to fix it.
 - **C11, three workers hospitalized:** the story already says two. Publish it and supersede the old line, or publish as-is and watch the number check flag both lines.
 
-Keyboard: ↑/↓ moves through the claims list. Every action has Undo.
+- **The long tail:** 150 claims. Filter to *Needs decision* or *Unassigned*, switch to compact rows, and select several to assign or dismiss in bulk.
+- **Source map:** the tab above the claim. Channel 8's unnamed source sits behind both C4 and C12.
+- **Demo state** (top right): switch to *Feed offline* or *Reporter view* to see those states.
+
+Keyboard: `j`/`k` to move, `/` to search, `x` to select, `m` for the source map, `?` for the full list. Every action has Undo.
 
 ## Research changed the design
 

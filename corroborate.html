@@ -194,6 +194,71 @@ form.log .actions{grid-column:1/-1;margin:0}
 .ln-item.correction .cp{font-style:italic;font-size:14px}
 .badline{grid-column:2;font-size:12.5px;color:var(--false);font-weight:600;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
+/* queue tools, bulk triage, states */
+.qhead{position:sticky;top:0;z-index:3;background:var(--panel)}
+.qhead .ph{position:static}
+.qtools{display:flex;flex-direction:column;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
+#q-search{height:32px;border:1px solid var(--line-2);border-radius:4px;background:var(--panel);padding:0 10px;color:var(--fg);width:100%;min-width:0}
+.fchips{display:flex;flex-wrap:wrap;gap:4px}
+.fchip{height:24px;padding:0 8px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.fchip:hover{border-color:var(--line-2);color:var(--fg)}
+.fchip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.fchip .n{font:500 11px var(--font-mono)}
+.qopts{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.qopts select,.bulk select,.demo select{height:26px;border:1px solid var(--line-2);border-radius:4px;background:var(--panel);color:var(--fg);font-size:12px;padding:0 4px}
+.qopts .sp{margin-left:auto}
+.bulk{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 14px;background:var(--accent-soft);border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700}
+.banner{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:9px 14px;background:var(--single-soft);border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.4}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.qrow{display:flex;align-items:flex-start;border-bottom:1px solid var(--line)}
+.qrow .qi{border-bottom:0;flex:1;min-width:0;padding-left:8px}
+.qrow input.sel{margin:13px 0 0 12px;flex:none;accent-color:var(--accent)}
+.qrow.checked{background:var(--accent-soft)}
+.compact .qi .ln{display:none}
+.compact .qi{padding-top:6px;padding-bottom:6px}
+.compact .qi .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.compact .qrow input.sel{margin-top:8px}
+.qempty{padding:20px 16px;color:var(--muted);font-size:13.5px}
+.qempty p{margin:0 0 10px}
+.demo{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);padding:10px 0}
+/* center tabs + source map */
+.viewtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 20px;background:var(--panel);position:sticky;top:0;z-index:2}
+.viewtabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px;font-weight:600;font-size:13px;color:var(--muted);cursor:pointer}
+.viewtabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.viewtabs .hint{margin-left:auto;align-self:center;font-size:12px;color:var(--faint)}
+.mapv{padding:16px 20px 40px}
+.maphead p{margin:0 0 6px;font-size:13.5px;max-width:70ch}
+.maphead .mapnote{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+.map-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:12px}
+svg.map{display:block;min-width:700px;width:100%;height:auto}
+.map .edge{fill:none;stroke:var(--line-2);stroke-width:1.2}
+.map .edge.hot{stroke:var(--accent);stroke-width:1.8}
+.map .node rect{fill:var(--panel);stroke:var(--line-2);stroke-width:1}
+.map .node.claim rect{fill:var(--sunk)}
+.map .node.shared rect{stroke:var(--single);stroke-width:1.8}
+.map .node.cur rect{stroke:var(--accent);stroke-width:2}
+.map .node text{fill:var(--fg);font:600 11.5px var(--font-ui)}
+.map .node text.sub{fill:var(--muted);font:500 9.5px var(--font-mono)}
+.map .node text.badge{fill:var(--single);font:700 10px var(--font-ui)}
+.map .node.claim{cursor:pointer}
+.map .colh{fill:var(--muted);font:700 10px var(--font-ui);letter-spacing:.08em;text-transform:uppercase}
+.map .dim{opacity:.22}
+.map .st{stroke-width:1.5}
+.map .st.confirmed{fill:var(--conf);stroke:var(--conf)}
+.map .st.corroborated{fill:var(--corr);stroke:var(--corr)}
+.map .st.single{fill:var(--single-soft);stroke:var(--single)}
+.map .st.unverified{fill:none;stroke:var(--unv);stroke-dasharray:2 2}
+.map .st.debunked{fill:var(--false);stroke:var(--false)}
+.map .st.superseded{fill:var(--sup-soft);stroke:var(--sup)}
+/* help overlay */
+.overlay{position:fixed;inset:0;background:rgba(10,12,20,.45);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
+.overlay .sheet{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;max-width:420px;width:100%}
+.overlay h3{margin:0 0 12px;font:700 17px var(--font-copy)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;margin:0 0 14px;font-size:13.5px}
+.keys dt{white-space:nowrap}
+.keys dd{margin:0;color:var(--muted)}
+kbd{font:500 11.5px var(--font-mono);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:3px;padding:0 5px;background:var(--sunk);color:var(--fg)}
+
 /* toast */
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:14px;
   padding:10px 12px 10px 14px;border-radius:5px;background:var(--fg);color:var(--bg);font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:20;max-width:calc(100% - 32px)}
@@ -270,6 +335,11 @@ tr:last-child td{border-bottom:0}
 .next{display:flex;gap:10px;align-items:baseline;font-size:15px;line-height:1.55;padding:10px 12px;border:1px dashed var(--line-2);border-radius:4px;margin:0 0 14px}
 @media (min-width:980px){ .ba{width:880px;margin-left:50%;transform:translateX(-50%)} }
 @media (max-width:640px){ .ba{grid-template-columns:1fr} }
+.model{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:4px 0 18px}
+.model .ent{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 12px;display:flex;flex-direction:column;gap:1px}
+.model .ent b{font:700 14px var(--font-ui)}
+.model .ent span{font-size:12px;color:var(--muted)}
+.model .rel{font:500 12px var(--font-mono);color:var(--muted)}
 .cta{display:inline-flex;align-items:center;padding:10px 16px;border-radius:4px;background:var(--accent);color:var(--on-accent)!important;text-decoration:none;font-weight:700;font-size:14.5px}
 .foot{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 
@@ -312,11 +382,24 @@ tr:last-child td{border-bottom:0}
 <main class="view" id="view-prototype">
   <div class="event" id="event"></div>
   <div class="console">
-    <section class="pane queue" aria-label="Claims">
-      <div class="ph"><h2>Claims</h2><span class="meta" id="qmeta"></span></div>
+    <section class="pane queue" id="qpane" aria-label="Claims">
+      <div class="qhead">
+        <div class="ph"><h2>Claims</h2><span class="meta" id="qmeta"></span></div>
+        <div class="qtools">
+          <input type="search" id="q-search" placeholder="Search claims  ( / )" aria-label="Search claims" autocomplete="off">
+          <div class="fchips" id="fchips" role="group" aria-label="Filter claims"></div>
+          <div class="qopts"><label for="q-group">Group by</label><select id="q-group"><option value="stage">Stage</option><option value="topic">Topic</option><option value="owner">Owner</option></select><button class="btn sm sp" id="q-density" data-act="density">Compact rows</button></div>
+        </div>
+        <div class="bulk" id="bulk" hidden><span id="bulk-n"></span><label for="bulk-assign" class="vh">Assign selected claims to</label><select id="bulk-assign"><option value="">Assign to…</option><option>You</option><option>Priya N.</option><option>Dana L.</option><option>Marcus O.</option></select><button class="btn sm" data-act="bulk-dismiss">Dismiss</button><button class="btn sm" data-act="bulk-clear">Clear</button></div>
+        <div class="banner" id="offline" hidden></div>
+      </div>
       <div id="queue"></div>
     </section>
-    <section class="pane work" aria-label="Selected claim"><div class="wb" id="work"></div></section>
+    <section class="pane work" aria-label="Selected claim">
+      <div class="viewtabs" role="tablist" aria-label="Center view"><button role="tab" id="tab-claim" data-act="view" data-view="claim" aria-selected="true">Claim</button><button role="tab" id="tab-map" data-act="view" data-view="map" aria-selected="false">Source map</button><span class="hint">Press <kbd>?</kbd> for shortcuts</span></div>
+      <div class="wb" id="work"></div>
+      <div class="mapv" id="mapv" hidden></div>
+    </section>
     <aside class="pane story" aria-label="Live story">
       <div class="ph"><h2>Live story</h2><span class="meta">as published</span></div>
       <div class="story-h"><div class="kick">Live updates</div><h3>Fire at East Marlow resin plant; residents told to shelter in place</h3><div class="by">Metro staff · updated <span class="mono" id="updated">16:30</span></div></div>
@@ -325,6 +408,18 @@ tr:last-child td{border-bottom:0}
     </aside>
   </div>
   <div class="toast" id="toast" hidden role="status"></div>
+  <div class="overlay" id="help" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="help-h">
+    <h3 id="help-h">Keyboard shortcuts</h3>
+    <dl class="keys">
+      <dt><kbd>j</kbd> <kbd>k</kbd> or <kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Next or previous claim in the list</dd>
+      <dt><kbd>/</kbd></dt><dd>Search claims</dd>
+      <dt><kbd>x</kbd></dt><dd>Select the current claim for bulk actions</dd>
+      <dt><kbd>m</kbd></dt><dd>Switch between the claim and the source map</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Clear the selection, or leave the search box</dd>
+      <dt><kbd>?</kbd></dt><dd>Show or hide this list</dd>
+    </dl>
+    <button class="btn" data-act="help-close">Close</button>
+  </div></div>
 </main>
 
 <!-- ============ CASE STUDY ============ -->
@@ -458,6 +553,72 @@ tr:last-child td{border-bottom:0}
       </section>
 
       <section>
+        <h2>Designing for the overloaded hour</h2>
+        <p>A breaking story doesn't arrive as ten tidy claims. The prototype now carries 150, most of them weak: one post, no source, nobody assigned. The interface has to make the handful that need a decision impossible to miss, and let an editor clear the rest quickly.</p>
+        <div class="decision"><div class="dn">Filters before folders</div><dl>
+          <dt>Chose</dt><dd>Search plus five filter chips, each showing a live count (All, Needs decision, Unassigned, Mine, Conflicts), and a switch to group by stage, topic or owner.</dd>
+          <dt>Instead of</dt><dd>Fixed folders, or one long list sorted by time.</dd>
+          <dt>Because</dt><dd>The editor's question changes minute to minute: "what's ready?", then "what's nobody on?", then "what about the evacuation?" The counts answer the question before the click.</dd></dl></div>
+        <div class="decision"><div class="dn">Density on demand</div><dl>
+          <dt>Chose</dt><dd>A compact mode that collapses each row to one line, so about three times as many claims fit on screen.</dd>
+          <dt>Instead of</dt><dd>One fixed row height.</dd>
+          <dt>Because</dt><dd>Scanning 150 items and reading one carefully are different tasks, and the same person does both within the same minute.</dd></dl></div>
+        <div class="decision"><div class="dn">Bulk triage, with undo</div><dl>
+          <dt>Chose</dt><dd>Checkboxes (or <kbd>x</kbd>) to select many claims, then assign them to someone or dismiss them in one step. Dismissed claims stay searchable and can be reopened.</dd>
+          <dt>Instead of</dt><dd>Handling claims one at a time.</dd>
+          <dt>Because</dt><dd>Most of the long tail is noise. Clearing it fast is what keeps the important claims visible.</dd></dl></div>
+        <div class="decision"><div class="dn">Keyboard first</div><dl>
+          <dt>Chose</dt><dd><kbd>j</kbd>/<kbd>k</kbd> to move, <kbd>/</kbd> to search, <kbd>x</kbd> to select, <kbd>m</kbd> for the source map, <kbd>?</kbd> for the full list.</dd>
+          <dt>Instead of</dt><dd>Mouse only.</dd>
+          <dt>Because</dt><dd>Desk editors live in this screen for hours. Expert speed comes from the keyboard.</dd></dl></div>
+      </section>
+
+      <section>
+        <h2>The source map</h2>
+        <p>A list of sources per claim can't show the most dangerous pattern from the Haneda research: one origin quietly sitting behind several claims. The source map lays every claim under active coverage out in three columns (original sources, the reports that repeat them, and the claims they support) and outlines in amber any origin that feeds more than one claim.</p>
+        <p>In the prototype, Channel 8's unnamed "source close to the investigation" is behind both the reported death (C4) and the detail that the worker was a night-shift supervisor (C12). Each claim on its own looks like a routine single-source claim. The map shows they stand or fall together, and the claim view now warns about it too.</p>
+        <div class="decision"><div class="dn">A layered map, not a free-form graph</div><dl>
+          <dt>Chose</dt><dd>Fixed columns read left to right, with the selected claim's whole lineage highlighted and everything else dimmed.</dd>
+          <dt>Instead of</dt><dd>A force-directed network diagram.</dd>
+          <dt>Because</dt><dd>Free-form graphs look impressive but move every time data changes, so nothing stays where the editor last saw it. Columns keep each item in a stable place and match the question being asked: where did this come from?</dd></dl></div>
+      </section>
+
+      <section>
+        <h2>States</h2>
+        <p>Every state the desk will hit, designed rather than left to chance. Use <strong>Demo state</strong> at the top right of the prototype to switch between them.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>State</th><th>What the editor sees</th><th>Try it</th></tr></thead>
+          <tbody>
+            <tr><td>Nothing matches</td><td>Says what was searched and in which filter, with one button to clear both.</td><td>Search for anything that isn't there.</td></tr>
+            <tr><td>Social feed offline</td><td>A banner explains what still works (claims, sources, publishing) and what doesn't (mention counts are frozen), with a Retry button.</td><td>Demo state → Feed offline</td></tr>
+            <tr><td>Reporter permissions</td><td>"Publish" becomes "Request publish". Correcting and superseding published lines are locked, with the reason on hover.</td><td>Demo state → Reporter view</td></tr>
+            <tr><td>Numbers disagree</td><td>Both lines flagged in the live story, with a one-click fix.</td><td>Publish C11 as-is.</td></tr>
+            <tr><td>False claim in the story</td><td>The line is flagged red with a Correct button.</td><td>C7</td></tr>
+            <tr><td>Shared origin</td><td>A warning in the claim view, plus highlighting in the source map.</td><td>C4 or C12</td></tr>
+            <tr><td>Dismissed</td><td>Moved to Closed, still searchable, with a Reopen button.</td><td>Select claims, then Dismiss.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section>
+        <h2>Engineering tradeoffs</h2>
+        <p>How the design would meet a real system, and what I'd cut to ship a first version.</p>
+        <div class="model" aria-label="Data model">
+          <div class="ent"><b>Mention</b><span>a post, alert or tip</span></div><div class="rel">grouped into →</div>
+          <div class="ent"><b>Claim</b><span>one checkable statement</span></div><div class="rel">← supported by</div>
+          <div class="ent"><b>Source</b><span>a person, record or report</span></div><div class="rel">↻ repeats</div>
+          <div class="ent"><b>Story line</b><span>relies on a claim</span></div>
+        </div>
+        <ul>
+          <li><strong>Grouping posts into claims is the hardest part to automate.</strong> Version 1 would suggest groups and let the editor confirm them, rather than trusting automatic clustering on a story where a wrong merge could publish an error.</li>
+          <li><strong>Lineage depends on reporters filling in "Based on."</strong> To keep that cheap, it defaults to Independent and offers the claim's existing sources as one-click choices. The source map is computed from those fields and is never drawn by hand.</li>
+          <li><strong>The number check needs structured numbers.</strong> Version 1 checks only the counts editors enter themselves (injured, hospitalized, dead). Pulling numbers out of free text would come later.</li>
+          <li><strong>Several editors work at once.</strong> Every change would sync live, and a conflicting edit would show who changed what and when, instead of silently overwriting it.</li>
+          <li><strong>Cut from version 1:</strong> built-in reverse image search, a phone view for reporters, automatic clustering, and an after-action review mode.</li>
+        </ul>
+      </section>
+
+      <section>
         <h2>The verification ladder</h2>
         <figure class="figure">
           <div class="ladder">
@@ -474,7 +635,7 @@ tr:last-child td{border-bottom:0}
 
       <section>
         <h2>Iterations</h2>
-        <p>Four rounds so far, each set off by something I learned. The fifth is still to come.</p>
+        <p>Five rounds so far, each set off by something I learned. The sixth is still to come.</p>
 
         <div class="round">
           <div class="rn"><span>Round 0</span><b>Choosing the problem</b></div>
@@ -537,8 +698,16 @@ tr:last-child td{border-bottom:0}
           </div>
         </div>
 
+        <div class="round">
+          <div class="rn"><span>Round 4</span><b>Stress-testing at scale</b></div>
+          <div class="rc">
+            <p>Eleven hand-picked claims made the design look calm. Loading 150 realistic ones showed what that hid: the stage groups pushed the few claims that needed a decision below the fold, and per-claim source lists couldn't show one origin feeding several claims. So I added filters with counts, compact rows, bulk triage, the source map, and designed states for an offline feed and a reporter's permissions.</p>
+            <p class="lesson">Learned: test the design against the worst hour, not the demo.</p>
+          </div>
+        </div>
+
         <div class="round pending">
-          <div class="rn"><span>Round 4</span><b>Figma and usability tests</b></div>
+          <div class="rn"><span>Round 5</span><b>Figma and usability tests</b></div>
           <div class="rc">
             <div class="todo-block"><p><span class="todo">Fill in</span>Rebuild the main screens in Figma, then run the four test tasks with five people. Add a frame or two, and one sentence on what the tests changed. If nothing changed, say what held up and why.</p></div>
           </div>
@@ -631,8 +800,49 @@ const CONFLICTS = [
   {a:'C4', b:'C10', note:'The company says all employees are accounted for.'},
   {a:'C9', b:'C2', note:'Officials ordered residents to shelter in place, not to evacuate.'},
 ];
+/* ---------- volume: twelve claims under active coverage plus a long tail ---------- */
+CLAIMS.push({id:'C12', text:'Worker killed was a night-shift supervisor', first:T(16,35), mentions:22, assignee:null, task:null,
+  sources:[S('a','WMRL Channel 8 broadcast','Outlet',false,T(16,35),'Same unnamed "source close to the investigation" as C4')],
+  copy:'The worker who died was a night-shift supervisor, Channel 8 reported.', published:null});
+const ORIGIN = {'C4.a':'ch8-anon', 'C12.a':'ch8-anon', 'C2.a':'county-ema', 'C11.a':'county-ema'};
+const TOPIC_OF = {C1:'The fire', C2:'Evacuation', C3:'Casualties', C4:'Casualties', C5:'The fire', C6:'Company', C7:'Environment', C8:'Traffic', C9:'Evacuation', C10:'Company', C11:'Casualties', C12:'Casualties'};
+CLAIMS.forEach(c => { c.f = true; c.topic = TOPIC_OF[c.id]; c.sources.forEach(s => { const o = ORIGIN[c.id + '.' + s.id]; if (o) s.origin = o; }); });
+(function longTail(){
+  let gs = 20240102;
+  const r = () => (gs = (gs * 48271) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(r() * a.length)];
+  const towns = ['Westbrook','Fairhaven','North Marlow','Cedar Point','Ashby','Millbrook','Glen Ridge','Port Ellis'];
+  const roads = ['Route 9','Elm St.','Mill Rd.','I-84 exit 12','Harbor Ave.','Fulton St.','Canal Rd.','Birch Ln.'];
+  const spots = ['the plant','Lincoln Elementary','Marlow Heights','the rail yard','downtown'];
+  const sites = ['Westbrook Middle School','St. Agnes Church','Marlow Mall','the senior center on Oak St.','Riverside Apartments','the Amtrak station'];
+  const GEN = {
+    'Traffic': [() => `${pick(roads)} ${pick(['closed','backed up','reopened','blocked by fire trucks'])} near ${pick(spots)}`, () => `Detour set up on ${pick(roads)}`, () => `Buses rerouted around ${pick(spots)}`],
+    'Environment': [() => `Smoke smell reported in ${pick(towns)}`, () => `Ash falling in ${pick(towns)}`, () => `Air quality alert for ${pick(towns)}`, () => `${pick(towns)} residents told to close windows`, () => `Dead fish seen in ${pick(['the Marlow River','Calder Creek'])}`, () => `Orange plume visible from ${pick(towns)}`],
+    'Evacuation': [() => `${pick(sites)} evacuated`, () => `Shelter opening at ${pick(sites)}`, () => `Pets allowed at the shelter at ${pick(sites)}`, () => `Residents in ${pick(towns)} leaving on their own`],
+    'Response': [() => `${pick(['State hazmat team','Westbrook FD','National Guard','Red Cross','EPA responders','Fairhaven ladder company'])} ${pick(['sent to the scene','staging on Route 9','called in','asked to stand by'])}`, () => `Second alarm called at ${pick(['16:02','16:10','16:18'])}`],
+    'Casualties': [() => `${3 + Math.floor(r() * 10)} people treated for smoke inhalation`, () => `Firefighter ${pick(['injured','treated for heat exhaustion','hurt by falling debris'])}`, () => `Worker ${pick(['missing','unaccounted for','airlifted'])}, according to ${pick(['a relative','a coworker','a post'])}`],
+    'Company': [() => `Plant had ${20 + Math.floor(r() * 60)} workers on shift`, () => `Calder Resin owned by ${pick(['Halvorsen Group','a private equity firm','its founding family'])}`, () => `Plant ${pick(['expanded in 2022','failed a fire inspection','stores styrene on site'])}`],
+    'Cause': [() => `Fire started in ${pick(['a resin storage tank','the loading dock','a dryer unit','an electrical room'])}`, () => `Explosion caused by ${pick(['a forklift','a gas leak','lightning','a chemical reaction'])}`],
+  };
+  const who = [['Resident, Oak St.','Eyewitness'],['Driver on Route 9','Eyewitness'],['Westbrook resident','Eyewitness'],['@marlowwatch on X','Social'],['"East Marlow Neighbors" Facebook group','Social'],['Plant contractor','Insider'],['WMRL Channel 8 report','Outlet'],['Marlow Patch','Outlet'],['r/Marlow thread','Social']];
+  const notes = ['Phone, Marcus O.','Reply to our DM','Posted a photo','Called the tip line','Comment on our live stream'];
+  const topics = Object.keys(GEN), seen = new Set(CLAIMS.map(c => c.text));
+  let n = 13, guard = 0;
+  while (n <= 150 && guard++ < 5000){
+    const topic = pick(topics), text = pick(GEN[topic])();
+    if (seen.has(text)) continue;
+    seen.add(text);
+    const first = T(15,55) + Math.floor(r() * 46), x = r(), sources = [];
+    const src = (id, via) => { const [w, type] = pick(who); return S(id, w, type, type === 'Eyewitness' && r() < 0.4, Math.min(NOW, first + 2 + Math.floor(r() * 15)), pick(notes), via); };
+    if (x > 0.68) sources.push(src('a'));
+    if (x > 0.92) sources.push(r() < 0.5 ? Object.assign(src('b', 'a'), {type:'Social', onRecord:false, note:'Shares the post above'}) : src('b'));
+    const owner = r() < 0.28 ? pick(['Priya N.','Dana L.','Marcus O.']) : null;
+    CLAIMS.push({id:'C' + n, text, topic, first, mentions: Math.max(1, Math.round(Math.pow(r(), 2.2) * 60)), assignee: owner, task: owner ? 'Checking' : null, sources, copy: text + '.', published:null, gen:true});
+    n++;
+  }
+})();
 const byId = id => CLAIMS.find(c => c.id === id);
-const state = { sel:'C4', logOpen:false, corrections:[], undo:null };
+const state = { sel:'C4', logOpen:false, corrections:[], undo:null, filter:'all', q:'', group:'stage', compact:false, selected:new Set(), view:'claim', demo:'live', reconnecting:false };
 
 /* ---------- verification logic ---------- */
 function roots(c){ return c.sources.filter(s => !s.via || !c.sources.some(x => x.id === s.via)); }
@@ -657,12 +867,13 @@ function canPublish(c){
   if (c.published) return {ok:false, why:'Already in the live story'};
   if (st === 'debunked') return {ok:false, why:'Marked false'};
   if (st === 'confirmed' || st === 'corroborated') return {ok:true, label:'Add to live story'};
-  if (st === 'single' && roots(c)[0].onRecord) return {ok:true, label:'Publish as attributed statement', attributed:true};
+  if (st === 'single' && roots(c)[0].onRecord && roots(c)[0].type === 'Company') return {ok:true, label:'Publish as attributed statement', attributed:true};
   if (st === 'single') return {ok:false, why:'Our standard needs a second independent source or an official on the record'};
   return {ok:false, why:'No source has been reached yet'};
 }
 function needs(c){
   const st = status(c), r = roots(c);
+  if (c.dismissed) return {head:'Dismissed for now', why:'Not newsworthy yet. Mentions keep counting; reopen it if the story grows.'};
   if (st === 'debunked') return {head:'Do not publish', why: c.debunked.why};
   if (st === 'superseded'){ const b = byId(c.superseded.by); return {head:'Replaced by newer information', why:`${b.id} has a newer figure from ${shortWho(roots(b)[0])}. This line was marked superseded at ${fmt(c.superseded.t)}. It isn't false; it's out of date.`}; }
   if (st === 'confirmed'){ const o = r.find(s => s.onRecord && (s.type === 'Official' || s.type === 'Records')); return {head:'Meets the standard. Publishable.', why:`Confirmed by ${o.who}, on the record, as of ${fmt(o.t)}. Newer official information can still supersede it.`}; }
@@ -677,6 +888,7 @@ function needs(c){
 }
 function conflictsOf(c){ return CONFLICTS.filter(x => x.a === c.id || x.b === c.id).map(x => ({other: x.a === c.id ? x.b : x.a, note:x.note})); }
 function stage(c){
+  if (c.dismissed) return 'closed';
   const st = status(c);
   if (st === 'debunked') return c.published && !c.corrected ? 'action' : 'closed';
   if (st === 'superseded') return 'closed';
@@ -686,6 +898,7 @@ function stage(c){
 }
 function flag(c){
   const st = status(c), cp = canPublish(c);
+  if (c.dismissed) return {cls:'', t:'Dismissed'};
   if (st === 'debunked' && c.published && !c.corrected) return {cls:'false', t:'Correction needed'};
   if (st === 'superseded') return {cls:'', t:'Superseded by ' + c.superseded.by};
   if (mismatches(c).length) return {cls:'conflict', t: (c.published ? 'Numbers disagree with ' : 'Differs from live ') + mismatches(c).map(x => x.id).join(', ')};
@@ -713,25 +926,61 @@ function renderEvent(){
     <div class="kpi spark"><svg width="${W}" height="${H}" viewBox="-2 0 ${W+6} ${H}" role="img" aria-label="Social mentions per 5 minutes, peaking at 70 around 16:15 and now at 36">
       <path d="${line} L ${W} ${H} L 0 ${H} Z" fill="var(--accent-soft)"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
       <circle cx="${last[0]}" cy="${last[1]}" r="3" fill="var(--accent)"/></svg>
-      <div><div class="lab">Mentions / 5 min</div><div class="sub"><span class="mono">36</span> now · peak <span class="mono">70</span> at 16:15</div></div></div>`;
+      <div><div class="lab">Mentions / 5 min</div><div class="sub">${state.demo === 'offline' ? 'Frozen at 16:39 · feed offline' : '<span class="mono">36</span> now · peak <span class="mono">70</span> at 16:15'}</div></div></div>
+    <div class="demo"><label for="demo-state">Demo state</label><select id="demo-state">${[['live','Live'],['offline','Feed offline'],['reporter','Reporter view']].map(([v,l]) => `<option value="${v}" ${state.demo === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`;
 }
 
 /* ---------- queue ---------- */
-const GROUPS = [['action','Needs a decision'],['checking','Being checked'],['published','In the story'],['closed','Closed']];
-function order(){ const o = []; GROUPS.forEach(([g]) => CLAIMS.filter(c => stage(c) === g).forEach(c => o.push(c))); return o; }
+const STAGES = [['action','Needs a decision'],['checking','Being checked'],['published','In the story'],['closed','Closed']];
+const TOPICS = ['The fire','Casualties','Evacuation','Environment','Traffic','Company','Cause','Response'];
+const TEAM = ['You','Priya N.','Dana L.','Marcus O.'];
+const FILTERS = [
+  ['all','All', () => true],
+  ['action','Needs decision', c => stage(c) === 'action'],
+  ['unassigned','Unassigned', c => !c.assignee && stage(c) !== 'closed'],
+  ['mine','Mine', c => c.assignee === 'You'],
+  ['conflicts','Conflicts', c => stage(c) !== 'closed' && !!(conflictsOf(c).length || mismatches(c).length)],
+];
+const prio = c => (stage(c) === 'action' ? 1000 : 0) + (c.f ? 500 : 0) + c.mentions;
+function matches(c){
+  if (!FILTERS.find(x => x[0] === state.filter)[2](c)) return false;
+  const q = state.q.trim().toLowerCase();
+  return !q || `${c.id} ${c.text} ${c.topic || ''} ${c.assignee || ''}`.toLowerCase().includes(q);
+}
+function groups(){
+  const list = CLAIMS.filter(matches).sort((a,b) => prio(b) - prio(a));
+  if (state.group === 'topic') return TOPICS.map(t => [t, list.filter(c => c.topic === t)]);
+  if (state.group === 'owner') return TEAM.map(n => [n, list.filter(c => c.assignee === n)]).concat([['Unassigned', list.filter(c => !c.assignee)]]);
+  return STAGES.map(([g, l]) => [l, list.filter(c => stage(c) === g)]);
+}
+function order(){ return groups().flatMap(g => g[1]); }
 function renderQueue(){
-  document.getElementById('qmeta').textContent = `${CLAIMS.length} tracked`;
-  document.getElementById('queue').innerHTML = GROUPS.map(([g, label]) => {
-    const list = CLAIMS.filter(c => stage(c) === g);
-    if (!list.length) return '';
-    return `<div class="grp"><span>${label}</span><span class="mono">${list.length}</span></div><ul class="qlist" role="listbox" aria-label="${label}">` + list.map(c => {
-      const st = status(c), f = flag(c);
-      return `<li><button class="qi" role="option" data-cid="${c.id}" aria-selected="${c.id === state.sel}">
+  const vis = order();
+  document.getElementById('qmeta').textContent = `${vis.length} of ${CLAIMS.length}`;
+  document.getElementById('fchips').innerHTML = FILTERS.map(([k, l, f]) => `<button class="fchip" data-filter="${k}" aria-pressed="${state.filter === k}">${l}<span class="n">${CLAIMS.filter(f).length}</span></button>`).join('');
+  document.getElementById('bulk').hidden = !state.selected.size;
+  document.getElementById('bulk-n').textContent = `${state.selected.size} selected`;
+  document.getElementById('qpane').classList.toggle('compact', state.compact);
+  const dn = document.getElementById('q-density');
+  dn.textContent = state.compact ? 'Comfortable rows' : 'Compact rows';
+  const off = document.getElementById('offline');
+  off.hidden = state.demo !== 'offline';
+  off.innerHTML = state.reconnecting
+    ? '<span><b>Reconnecting to the social feed…</b></span>'
+    : '<span><b>Social feed offline since 16:39.</b> Claims, sources and publishing still work. Mention counts are frozen.</span><button class="btn sm" data-act="retry">Retry</button>';
+  const el = document.getElementById('queue');
+  if (!vis.length){
+    el.innerHTML = `<div class="qempty"><p>No claims match${state.q ? ` “${esc(state.q)}”` : ''} in <b>${FILTERS.find(x => x[0] === state.filter)[1]}</b>.</p><button class="btn sm" data-act="clear-filters">Clear search and filters</button></div>`;
+    return;
+  }
+  el.innerHTML = groups().filter(g => g[1].length).map(([label, list]) =>
+    `<div class="grp"><span>${esc(label)}</span><span class="mono">${list.length}</span></div><ul class="qlist" role="listbox" aria-label="${esc(label)}" aria-multiselectable="true">` + list.map(c => {
+      const st = status(c), f = flag(c), on = state.selected.has(c.id);
+      return `<li class="qrow ${on ? 'checked' : ''}"><input type="checkbox" class="sel" data-sel="${c.id}" ${on ? 'checked' : ''} aria-label="Select ${c.id}"><button class="qi" role="option" data-cid="${c.id}" aria-selected="${c.id === state.sel}">
         <i class="g ${st}" title="${LABEL[st]}"></i><span class="tx">${esc(c.text)}</span><span class="id">${c.id}</span>
-        <span class="ln">${f ? `<span class="flag ${f.cls}">${esc(f.t)}</span>` : `<span>${LABEL[st]}</span>`}<span>${c.assignee ? esc(c.assignee) : '<b>Unassigned</b>'}</span><span class="mono">${c.mentions} mentions</span></span>
+        <span class="ln">${f ? `<span class="flag ${f.cls}">${esc(f.t)}</span>` : `<span>${LABEL[st]}</span>`}<span>${c.assignee ? esc(c.assignee) : '<b>Unassigned</b>'}</span><span class="mono">${c.mentions} mentions</span>${state.group !== 'topic' && c.topic ? `<span>${esc(c.topic)}</span>` : ''}</span>
       </button></li>`;
-    }).join('') + '</ul>';
-  }).join('');
+    }).join('') + '</ul>').join('');
 }
 
 /* ---------- workbench ---------- */
@@ -743,10 +992,13 @@ function renderWork(){
   const c = byId(state.sel), el = document.getElementById('work');
   if (!c){ el.innerHTML = '<p class="empty">Select a claim.</p>'; return; }
   const st = status(c), n = needs(c), cp = canPublish(c), r = roots(c), cf = conflictsOf(c);
+  const sw = sharedWith(c), editor = state.demo !== 'reporter';
   const tree = r.length ? `<ul class="tree">${r.map(root => `<li class="root">${srcRow(root,false)}${c.sources.filter(s => s.via === root.id).map(s => srcRow(s,true)).join('')}</li>`).join('')}</ul>`
     : `<div class="empty">No sources yet. ${c.mentions} posts mention this claim, but nobody has reached a person behind them.</div>`;
   let action = '';
-  if (st === 'debunked'){
+  if (c.dismissed){
+    action = `<div class="actions"><button class="btn" data-act="reopen">Reopen</button><span class="note">Dismissed claims stay searchable under Closed.</span></div>`;
+  } else if (st === 'debunked'){
     action = c.published && !c.corrected
       ? `<div class="actions"><button class="btn danger" data-act="correct">Correct the live story</button><span class="note">This claim appears in the line published at ${fmt(c.published)}.</span></div>`
       : `<div class="actions"><span class="note">${c.corrected ? 'The live story has been corrected.' : 'Not in the live story.'}</span></div>`;
@@ -754,7 +1006,9 @@ function renderWork(){
     action = `<div class="actions"><span class="note">The old line stays in the story, struck through, so readers can see what changed.</span></div>`;
   } else if (!c.published){
     const mm = mismatches(c).length;
-    action = `<div class="actions"><button class="btn ${mm ? '' : 'primary'}" data-act="publish" ${cp.ok ? '' : 'disabled'}>${cp.ok ? (mm ? 'Publish as-is' : cp.label) : 'Add to live story'}</button><span class="note">${cp.ok ? 'Draft line: “' + esc(c.copy) + '”' : esc(cp.why) + '.'}</span></div>`;
+    action = !editor && cp.ok
+      ? `<div class="actions"><button class="btn primary" data-act="request">Request publish</button><span class="note">Reporters can't publish. The desk editor gets your request with the draft line.</span></div>`
+      : `<div class="actions"><button class="btn ${mm ? '' : 'primary'}" data-act="publish" ${cp.ok ? '' : 'disabled'}>${cp.ok ? (mm ? 'Publish as-is' : cp.label) : 'Add to live story'}</button><span class="note">${cp.ok ? 'Draft line: “' + esc(c.copy) + '”' : esc(cp.why) + '.'}</span></div>`;
   } else {
     action = `<div class="actions"><span class="note">Published at ${fmt(c.published)}.</span></div>`;
   }
@@ -782,6 +1036,7 @@ function renderWork(){
         <span>Checking: <b>${c.assignee ? esc(c.assignee) : 'nobody'}</b>${c.task ? ' · ' + esc(c.task) : ''}</span>
         ${c.assignee === 'You' ? '' : `<button class="btn sm" data-act="take">${c.assignee ? 'Take over' : 'Take this claim'}</button>`}</div></div>
     ${numHTML}
+    ${sw.length ? `<div class="card conflict"><h4><span>Shared origin</span></h4>${r.length === 1 ? 'This claim\'s only independent source' : 'One of this claim\'s sources'} also feeds ${sw.map(x => `<button data-cid="${x.id}">${x.id}</button>`).join(', ')}. If it's wrong, ${sw.length === 1 ? 'both claims are' : 'all of them are'}. <button data-act="view" data-view="map">See the source map</button></div>` : ''}
     <div class="card need ${st}"><h4><span>${st === 'debunked' ? 'Marked false' : st === 'superseded' ? 'Superseded' : 'What it needs'}</span></h4><p>${esc(n.head)}</p><div class="why">${esc(n.why)}</div>${action}</div>
     ${cf.map(x => `<div class="card conflict"><h4><span>Conflict</span></h4>${esc(x.note)} See <button data-cid="${x.other}">${x.other}: ${esc(byId(x.other).text)}</button>.</div>`).join('')}
     <div class="card"><h4><span>Sources</span><span>${c.sources.length} report${c.sources.length === 1 ? '' : 's'}</span></h4>
@@ -829,7 +1084,82 @@ function renderStory(){
   document.getElementById('updated').textContent = fmt(latest);
 }
 
-function render(){ renderEvent(); renderQueue(); renderWork(); renderStory(); }
+/* ---------- source map ---------- */
+const okey = (c, s) => s.origin || (c.id + '.' + s.id);
+function sharedWith(c){
+  const keys = new Set(roots(c).map(s => okey(c, s)));
+  return CLAIMS.filter(x => x !== c && x.sources.some(s => !s.via && keys.has(okey(x, s))));
+}
+const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+function renderSourceMap(){
+  const el = document.getElementById('mapv');
+  const si = c => STAGES.findIndex(s => s[0] === stage(c));
+  const claims = CLAIMS.filter(c => c.f && c.sources.length).sort((a, b) => si(a) - si(b) || a.first - b.first);
+  const nodes = new Map(), edges = new Map();
+  const node = (k, o) => { if (!nodes.has(k)) nodes.set(k, Object.assign({k, claims:new Set()}, o)); return nodes.get(k); };
+  const edge = (a, b) => edges.set(a + '>' + b, [a, b]);
+  claims.forEach(c => {
+    const st = status(c), ck = 'claim:' + c.id;
+    node(ck, {kind:'claim', label:c.text, sub:`${c.id} · ${LABEL[st]}`, st, cid:c.id}).claims.add(c.id);
+    c.sources.forEach(s => {
+      const k = okey(c, s);
+      node(k, {kind: s.via ? 'report' : 'origin', label:s.who, sub:s.type + (s.onRecord ? ' · on record' : ' · not on record')}).claims.add(c.id);
+      edge(k, ck);
+      if (s.via){ const p = c.sources.find(x => x.id === s.via); if (p) edge(okey(c, p), k); }
+    });
+  });
+  const E = [...edges.values()];
+  const COLX = {origin:0, report:244, claim:478}, W = 214, H = 38, GAP = 9, TOP = 28;
+  const cy = {};
+  claims.forEach((c, i) => { cy[c.id] = TOP + i * (H + GAP); });
+  ['claim','origin','report'].forEach(kind => {
+    const arr = [...nodes.values()].filter(n => n.kind === kind);
+    arr.forEach(n => { const ys = [...n.claims].map(id => cy[id]); n.y = kind === 'claim' ? cy[n.cid] : ys.reduce((a, b) => a + b, 0) / ys.length; });
+    arr.sort((a, b) => a.y - b.y);
+    let last = -Infinity;
+    arr.forEach(n => { n.y = Math.max(n.y, last + H + GAP, TOP); last = n.y; });
+  });
+  const sel = 'claim:' + state.sel, focus = nodes.has(sel), hot = new Set();
+  if (focus){
+    const back = k => { if (hot.has(k)) return; hot.add(k); E.filter(e => e[1] === k).forEach(e => back(e[0])); };
+    back(sel);
+    [...hot].forEach(k => { if (nodes.get(k).kind === 'origin') nodes.get(k).claims.forEach(id => hot.add('claim:' + id)); });
+  }
+  const height = Math.max(...[...nodes.values()].map(n => n.y)) + H + 12, width = COLX.claim + W + 6;
+  const ex = (a, b) => { const x1 = COLX[a.kind] + W, y1 = a.y + H / 2, x2 = COLX[b.kind], y2 = b.y + H / 2, mx = (x1 + x2) / 2; return `M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}`; };
+  const isHot = k => !focus || hot.has(k);
+  const edgesSVG = E.map(([a, b]) => `<path class="edge ${focus && hot.has(a) && hot.has(b) ? 'hot' : ''} ${isHot(a) && isHot(b) ? '' : 'dim'}" d="${ex(nodes.get(a), nodes.get(b))}"/>`).join('');
+  const nodesSVG = [...nodes.values()].map(n => {
+    const shared = n.kind === 'origin' && n.claims.size > 1, tx = n.kind === 'claim' ? 24 : 10;
+    return `<g class="node ${n.kind} ${shared ? 'shared' : ''} ${isHot(n.k) ? '' : 'dim'} ${n.k === sel ? 'cur' : ''}" ${n.cid ? `data-cid="${n.cid}"` : ''} transform="translate(${COLX[n.kind]},${n.y})">
+      <title>${esc(n.label)}</title><rect width="${W}" height="${H}" rx="3"/>
+      ${n.kind === 'claim' ? `<circle class="st ${n.st}" cx="12" cy="${H / 2}" r="5"/>` : ''}
+      <text x="${tx}" y="16">${esc(trunc(n.label, n.kind === 'claim' ? 30 : 32))}</text><text class="sub" x="${tx}" y="30">${esc(trunc(n.sub, 34))}</text>
+      ${shared ? `<text class="badge" x="${W - 8}" y="16" text-anchor="end">feeds ${n.claims.size}</text>` : ''}</g>`;
+  }).join('');
+  const cur = byId(state.sel), shared = [...nodes.values()].filter(n => n.kind === 'origin' && n.claims.size > 1);
+  el.innerHTML = `<div class="maphead">
+      <p>Every claim under active coverage, traced back to where its information first came from. Origins outlined in amber feed more than one claim: if one is wrong, every claim it feeds is at risk.</p>
+      <p class="mapnote">${focus ? `Highlighting <b>${cur.id}</b> and everything that shares an origin with it. Select another claim to move the highlight.` : `${esc(cur.id)} has no logged sources, so nothing is highlighted. Select a claim in the map or the list.`} ${shared.length} shared origin${shared.length === 1 ? '' : 's'} in this story.</p>
+    </div>
+    <div class="map-wrap"><svg class="map" viewBox="0 0 ${width} ${height}" role="img" aria-label="Source map: ${claims.length} claims and the sources they trace back to">
+      <text class="colh" x="0" y="14">Original sources</text><text class="colh" x="${COLX.report}" y="14">Repeated by</text><text class="colh" x="${COLX.claim}" y="14">Claims</text>
+      ${edgesSVG}${nodesSVG}</svg></div>`;
+}
+function renderCenter(){
+  const m = state.view === 'map';
+  document.getElementById('work').hidden = m;
+  document.getElementById('mapv').hidden = !m;
+  document.getElementById('tab-claim').setAttribute('aria-selected', !m);
+  document.getElementById('tab-map').setAttribute('aria-selected', m);
+  if (m) renderSourceMap(); else renderWork();
+}
+function applyRole(){
+  if (state.demo !== 'reporter') return;
+  document.querySelectorAll('#view-prototype [data-act="correct"], #view-prototype [data-act="supersede"], #view-prototype [data-act="publish-supersede"]').forEach(b => { b.disabled = true; b.title = 'Only editors can change the published story'; });
+}
+
+function render(){ renderEvent(); renderQueue(); renderCenter(); renderStory(); applyRole(); }
 
 /* ---------- actions ---------- */
 let toastTimer;
@@ -839,10 +1169,10 @@ function toast(html, undoable){
   t.hidden = false; clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.hidden = true; state.undo = null; }, 8000);
 }
-function snapshot(){ return JSON.stringify({claims: CLAIMS.map(c => ({id:c.id, published:c.published, corrected:!!c.corrected, superseded:c.superseded || null, assignee:c.assignee, task:c.task, sources:c.sources})), corrections: state.corrections}); }
+function snapshot(){ return JSON.stringify({claims: CLAIMS.map(c => ({id:c.id, published:c.published, corrected:!!c.corrected, superseded:c.superseded || null, dismissed:c.dismissed || null, assignee:c.assignee, task:c.task, sources:c.sources})), corrections: state.corrections}); }
 function restore(snap){
   const s = JSON.parse(snap);
-  s.claims.forEach(x => { const c = byId(x.id); c.published = x.published; c.corrected = x.corrected; c.superseded = x.superseded; c.assignee = x.assignee; c.task = x.task; c.sources = x.sources; });
+  s.claims.forEach(x => { const c = byId(x.id); c.published = x.published; c.corrected = x.corrected; c.superseded = x.superseded; c.dismissed = x.dismissed; c.assignee = x.assignee; c.task = x.task; c.sources = x.sources; });
   state.corrections = s.corrections;
 }
 let clock = NOW;
@@ -881,6 +1211,30 @@ function take(){
   const prev = c.assignee; c.assignee = 'You'; c.task = 'Just assigned';
   render(); toast(prev ? `You took over ${c.id} from ${esc(prev)}. They'll be notified.` : `${c.id} is yours.`, true);
 }
+function bulkAssign(name){
+  if (!name || !state.selected.size) return;
+  state.undo = snapshot();
+  const n = state.selected.size;
+  state.selected.forEach(id => { const c = byId(id); c.assignee = name; c.task = 'Assigned in bulk'; });
+  state.selected.clear(); render();
+  toast(`Assigned ${n} claim${n === 1 ? '' : 's'} to ${esc(name.replace(/\.$/, ''))}.`, true);
+}
+function bulkDismiss(){
+  if (!state.selected.size) return;
+  state.undo = snapshot();
+  const n = state.selected.size, t = ++clock;
+  state.selected.forEach(id => { byId(id).dismissed = {t}; });
+  state.selected.clear(); render();
+  toast(`Dismissed ${n} claim${n === 1 ? '' : 's'}. They stay searchable under Closed.`, true);
+}
+function reopen(){
+  const c = byId(state.sel); state.undo = snapshot();
+  c.dismissed = null; render(); toast(`Reopened ${c.id}.`, true);
+}
+function retry(){
+  state.reconnecting = true; renderQueue();
+  setTimeout(() => { state.reconnecting = false; state.demo = 'live'; render(); toast('Social feed reconnected. 14 new mentions since 16:39.'); }, 1400);
+}
 function logSource(e){
   e.preventDefault();
   const c = byId(state.sel), who = document.getElementById('log-who').value.trim();
@@ -898,6 +1252,8 @@ function logSource(e){
 }
 
 document.addEventListener('click', e => {
+  const fc = e.target.closest('[data-filter]');
+  if (fc){ state.filter = fc.dataset.filter; renderQueue(); return; }
   const act = e.target.closest('[data-act]');
   if (act){
     const a = act.dataset.act;
@@ -908,6 +1264,15 @@ document.addEventListener('click', e => {
     else if (a === 'take') take();
     else if (a === 'open-log'){ state.logOpen = true; renderWork(); const w = document.getElementById('log-who'); if (w) w.focus(); }
     else if (a === 'cancel-log'){ state.logOpen = false; renderWork(); }
+    else if (a === 'view'){ state.view = act.dataset.view; renderCenter(); applyRole(); }
+    else if (a === 'density'){ state.compact = !state.compact; renderQueue(); }
+    else if (a === 'clear-filters'){ state.filter = 'all'; state.q = ''; document.getElementById('q-search').value = ''; renderQueue(); }
+    else if (a === 'bulk-dismiss') bulkDismiss();
+    else if (a === 'bulk-clear'){ state.selected.clear(); renderQueue(); }
+    else if (a === 'reopen') reopen();
+    else if (a === 'request') toast(`Sent ${state.sel} to the desk editor with your draft line.`);
+    else if (a === 'retry') retry();
+    else if (a === 'help-close') document.getElementById('help').hidden = true;
     else if (a === 'undo' && state.undo){ restore(state.undo); state.undo = null; document.getElementById('toast').hidden = true; render(); }
     return;
   }
@@ -915,10 +1280,24 @@ document.addEventListener('click', e => {
   if (cl && cl.dataset.cid !== state.sel){ state.sel = cl.dataset.cid; state.logOpen = false; render(); }
 });
 document.addEventListener('submit', e => { if (e.target.id === 'logform') logSource(e); });
+document.addEventListener('input', e => { if (e.target.id === 'q-search'){ state.q = e.target.value; renderQueue(); } });
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.matches('input.sel')){ const id = t.dataset.sel; if (t.checked) state.selected.add(id); else state.selected.delete(id); renderQueue(); }
+  else if (t.id === 'q-group'){ state.group = t.value; renderQueue(); }
+  else if (t.id === 'bulk-assign'){ bulkAssign(t.value); t.value = ''; }
+  else if (t.id === 'demo-state'){ state.demo = t.value; state.reconnecting = false; render(); }
+});
 document.addEventListener('keydown', e => {
   if (document.getElementById('view-prototype').hidden || e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.target.matches && e.target.matches('input,select,textarea')) return;
+  if (e.target.matches && e.target.matches('input,select,textarea')){ if (e.key === 'Escape') e.target.blur(); return; }
   const o = order(), i = o.findIndex(c => c.id === state.sel);
+  if (e.key === '/'){ e.preventDefault(); document.getElementById('q-search').focus(); return; }
+  if (e.key === '?'){ const h = document.getElementById('help'); h.hidden = !h.hidden; return; }
+  if (e.key === 'Escape'){ document.getElementById('help').hidden = true; if (state.selected.size){ state.selected.clear(); renderQueue(); } return; }
+  if (e.key === 'm'){ state.view = state.view === 'map' ? 'claim' : 'map'; renderCenter(); applyRole(); return; }
+  if (e.key === 'x'){ if (state.selected.has(state.sel)) state.selected.delete(state.sel); else state.selected.add(state.sel); renderQueue(); focusSel(); return; }
+  if (!o.length) return;
   if (e.key === 'ArrowDown' || e.key === 'j'){ e.preventDefault(); state.sel = o[Math.min(i+1, o.length-1)].id; state.logOpen = false; render(); focusSel(); }
   else if (e.key === 'ArrowUp' || e.key === 'k'){ e.preventDefault(); state.sel = o[Math.max(i-1, 0)].id; state.logOpen = false; render(); focusSel(); }
 });
