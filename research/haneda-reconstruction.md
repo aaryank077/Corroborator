@@ -1,6 +1,6 @@
 # Reconstruction: Haneda runway collision, 2 January 2024
 
-Working file for the Corroborate case study. Draft by Claude from archived pages, with editorial calls by the author marked **CALL**.
+Working file for the Corroborate case study, built from archived pages. Editorial calls are marked **CALL**.
 
 ## The event (end state, for reference)
 
